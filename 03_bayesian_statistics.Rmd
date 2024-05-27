@@ -1,0 +1,659 @@
+---
+title: "bayesian_statistics"
+author: "Cintia Anna Nagy"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# import packages
+
+```{r message = FALSE}
+library(tidyverse)
+library(car)
+library(BayesFactor)
+library(bayestestR)
+```
+
+# import data
+
+```{r message = FALSE}
+study1_SL <- read_csv("processed_data/study_1/data_study_1_SL_offline_online.csv")
+study1_VP <- read_csv("processed_data/study_1/data_study_1_VP_offline_online.csv")
+study1_stat_learn <- read_csv("processed_data/study_1/data_study_1_statistical_learning.csv")
+study1_visuomotor_perf <- read_csv("processed_data/study_1/data_study_1_visuomotor_performance.csv")
+study2_SL <- read_csv("processed_data/study_2/data_study_2_SL_offline_online.csv")
+study2_VP <- read_csv("processed_data/study_2/data_study_2_VP_offline_online.csv")
+study2_stat_learn <- read_csv("processed_data/study_2/data_study_2_statistical_learning.csv")
+study2_visuomotor_perf <- read_csv("processed_data/study_2/data_study_2_visuomotor_performance.csv")
+```
+
+# preprocess data
+## Study 1
+
+```{r}
+# make long dataset
+study1_SL_long <- study1_SL %>% 
+  select(c('Group', 'AQ_total', 'Subject', 'offline_SL'))
+
+learning_phase <- c('offline_SL')
+
+study1_SL_long <- pivot_longer(
+  data = study1_SL_long,
+  cols = learning_phase,
+  names_to = c("Learning_phase"),
+  values_to = "SL_score"
+)
+
+study1_SL_long <- study1_SL_long %>% 
+  mutate(AQ_total_centered = scale(AQ_total, center = T, scale = F))
+
+study1_SL_long <- study1_SL_long %>% 
+  drop_na()
+```
+
+```{r}
+# make long dataset
+study1_VP_long <- study1_VP %>% 
+  select(c('Group', 'AQ_total', 'Subject', 'offline_VP'))
+
+learning_phase <- c('offline_VP')
+
+study1_VP_long <- pivot_longer(
+  data = study1_VP_long,
+  cols = learning_phase,
+  names_to = c("Learning_phase"),
+  values_to = "VP_score"
+)
+
+study1_VP_long <- study1_VP_long %>% 
+  mutate(AQ_total_centered = scale(AQ_total, center = T, scale = F))
+
+study1_VP_long <- study1_VP_long %>% 
+  drop_na()
+```
+
+```{r}
+# make long dataset
+study1_SL_long_block <- study1_SL %>% 
+  select(c('Group', 'AQ_total', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
+                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline', 'block21_offline', 'block22_offline','block23_offline', 'block24_offline','block25_offline'))
+
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20', 'block21', 'block22','block23', 'block24','block25')
+
+study1_SL_long_block <- pivot_longer(
+  data = study1_SL_long_block,
+  cols = starts_with(blocks),
+  names_to = c("Block"),
+  values_to = "SL_score"
+)
+
+study1_SL_long_block <- study1_SL_long_block %>% 
+  mutate(Block = gsub('_offline', "", Block)) %>% 
+  mutate(Block = gsub('block', "", Block))
+
+study1_SL_long_block <- study1_SL_long_block %>% 
+  mutate(Block = as.numeric(Block),
+         Block_centered = scale(Block, center = T, scale = F),
+         AQ_total_centered = scale(AQ_total, center = T, scale = F))
+
+study1_SL_long_block <- study1_SL_long_block %>% 
+  drop_na()
+```
+
+```{r}
+# make long dataset
+study1_VP_long_block <- study1_VP %>% 
+  select(c('Group', 'AQ_total', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
+                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline', 'block21_offline', 'block22_offline','block23_offline', 'block24_offline','block25_offline'))
+
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20', 'block21', 'block22','block23', 'block24','block25')
+
+study1_VP_long_block <- pivot_longer(
+  data = study1_VP_long_block,
+  cols = starts_with(blocks),
+  names_to = c("Block"),
+  values_to = "VP_score"
+)
+
+study1_VP_long_block <- study1_VP_long_block %>% 
+  mutate(Block = gsub('_offline', "", Block)) %>% 
+  mutate(Block = gsub('block', "", Block))
+
+study1_VP_long_block <- study1_VP_long_block %>% 
+  mutate(Block = as.numeric(Block),
+         Block_centered = scale(Block, center = T, scale = F),
+         AQ_total_centered = scale(AQ_total, center = T, scale = F))
+
+study1_VP_long_block <- study1_VP_long_block %>% 
+  drop_na()
+```
+
+```{r}
+study1_stat_learn_long <- study1_stat_learn %>% 
+  select(c('Group', 'Subject', 'e1_H','e2_H','e3_H','e4_H', 'e5_H', 'e1_L','e2_L','e3_L','e4_L', 'e5_L'))
+
+blocks <- c('e1','e2','e3','e4', 'e5')
+
+study1_stat_learn_long <- pivot_longer(
+  data = study1_stat_learn_long,
+  cols = starts_with(blocks),
+  names_to = c(".value", "Triplet"),
+  names_pattern = "([^_]+)_(\\D+)",
+  values_to = "Triplet"
+)
+
+study1_stat_learn_long <- pivot_longer(
+  data = study1_stat_learn_long,
+  cols = starts_with(blocks),
+  names_to = c("Blocks"),
+  values_to = "stat_learn"
+)
+
+study1_stat_learn_long <- study1_stat_learn_long %>% 
+  mutate(Block = gsub('e', "", Blocks))
+
+study1_stat_learn_long <- study1_stat_learn_long %>% 
+  drop_na()
+```
+
+```{r}
+study1_visuomotor_perf_long <- study1_visuomotor_perf %>% 
+  select(c('Group', 'Subject', 'e1','e2','e3','e4', 'e5'))
+
+blocks <- c('e1','e2','e3','e4')
+
+study1_visuomotor_perf_long <- pivot_longer(
+  data = study1_visuomotor_perf_long,
+  cols = starts_with(blocks),
+  names_to = c("Blocks"),
+  values_to = "visuomotor_perf"
+)
+
+study1_visuomotor_perf_long <- study1_visuomotor_perf_long %>% 
+  mutate(Block = gsub('e', "", Blocks))
+
+study1_visuomotor_perf_long <- study1_visuomotor_perf_long %>% 
+  drop_na()
+```
+
+## Study 2
+
+```{r}
+# make long dataset
+study2_SL_long <- study2_SL %>% 
+  select(c('Group', 'Subject', 'offline_SL'))
+
+learning_phase <- c('offline_SL')
+
+study2_SL_long <- pivot_longer(
+  data = study2_SL_long,
+  cols = learning_phase,
+  names_to = c("Learning_phase"),
+  values_to = "SL_score"
+)
+
+study2_SL_long <- study2_SL_long %>% 
+  drop_na()
+```
+
+```{r}
+# make long dataset
+study2_VP_long <- study2_VP %>% 
+  select(c('Group', 'Subject', 'offline_VP'))
+
+learning_phase <- c('offline_VP')
+
+study2_VP_long <- pivot_longer(
+  data = study2_VP_long,
+  cols = learning_phase,
+  names_to = c("Learning_phase"),
+  values_to = "VP_score"
+)
+
+study2_VP_long <- study2_VP_long %>% 
+  drop_na()
+```
+
+```{r}
+# make long dataset
+study2_SL_long_block <- study2_SL %>% 
+  select(c('Group', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
+                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline'))
+
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20')
+
+study2_SL_long_block <- pivot_longer(
+  data = study2_SL_long_block,
+  cols = starts_with(blocks),
+  names_to = c("Block"),
+  values_to = "SL_score"
+)
+
+study2_SL_long_block <- study2_SL_long_block %>% 
+    mutate(Block = gsub('_offline', "", Block)) %>% 
+    mutate(Block = gsub('block', "", Block))
+
+study2_SL_long_block <- study2_SL_long_block %>% 
+  drop_na()
+```
+
+```{r}
+# make long dataset
+study2_VP_long_block <- study2_VP %>% 
+  select(c('Group', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
+                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline'))
+
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20')
+
+study2_VP_long_block <- pivot_longer(
+  data = study2_VP_long_block,
+  cols = starts_with(blocks),
+  names_to = c("Block"),
+  values_to = "VP_score"
+)
+
+study2_VP_long_block <- study2_VP_long_block %>% 
+  mutate(Block = gsub('_offline', "", Block)) %>% 
+  mutate(Block = gsub('block', "", Block))
+
+study2_VP_long_block <- study2_VP_long_block %>% 
+  drop_na()
+```
+
+```{r}
+study2_stat_learn_long <- study2_stat_learn %>% 
+  select(c('Group', 'Subject', 'e1_H','e2_H','e3_H','e4_H', 'e1_L','e2_L','e3_L','e4_L'))
+
+blocks <- c('e1','e2','e3','e4')
+
+study2_stat_learn_long <- pivot_longer(
+  data = study2_stat_learn_long,
+  cols = starts_with(blocks),
+  names_to = c(".value", "Triplet"),
+  names_pattern = "([^_]+)_(\\D+)",
+  values_to = "Triplet"
+)
+
+study2_stat_learn_long <- pivot_longer(
+  data = study2_stat_learn_long,
+  cols = starts_with(blocks),
+  names_to = c("Blocks"),
+  values_to = "stat_learn"
+)
+
+study2_stat_learn_long <- study2_stat_learn_long %>% 
+  mutate(Block = gsub('e', "", Blocks))
+
+study2_stat_learn_long <- study2_stat_learn_long %>% 
+  drop_na()
+```
+
+```{r}
+study2_visuomotor_perf_long <- study2_visuomotor_perf %>% 
+  select(c('Group', 'Subject', 'e1','e2','e3','e4'))
+
+blocks <- c('e1','e2','e3','e4')
+
+study2_visuomotor_perf_long <- pivot_longer(
+  data = study2_visuomotor_perf_long,
+  cols = starts_with(blocks),
+  names_to = c("Blocks"),
+  values_to = "visuomotor_perf"
+)
+
+study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>% 
+  mutate(Block = gsub('e', "", Blocks))
+
+study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>% 
+  drop_na()
+```
+
+# Study 1 (group)
+## statistical learning 
+### group
+
+```{r}
+study1_bayes_SL <- extractBF(ttestBF(study1_SL_long$SL_score[study1_SL_long$Group == 0], study1_SL_long$SL_score[study1_SL_long$Group == 1]))$bf
+
+# BF_exclusion
+1/as.numeric(study1_bayes_SL)
+```
+
+### learning phase
+
+```{r}
+# whole sample offline
+study1_BF_whole_off_SL <- extractBF(ttestBF(study1_SL_long$SL_score))$bf
+
+# BF01
+1/as.numeric(study1_BF_whole_off_SL)
+```
+
+
+```{r}
+# lower AQ group offline
+lowerAQ_offline <- study1_SL_long %>% 
+  filter(Group == 0)
+
+study1_BF_lowerAQ_off_SL <- extractBF(ttestBF(lowerAQ_offline$SL_score))$bf
+
+# BF01
+1/as.numeric(study1_BF_lowerAQ_off_SL)
+```
+
+```{r}
+# higher AQ group offline
+higherAQ_offline <- study1_SL_long %>% 
+  filter(Group == 1)
+
+study1_BF_higherAQ_off_SL <- extractBF(ttestBF(higherAQ_offline$SL_score))$bf
+
+# BF01
+1/as.numeric(study1_BF_higherAQ_off_SL)
+```
+
+### block x group
+
+```{r}
+study1_bayes_block_SL <- generalTestBF(SL_score ~ Block*Group,
+data = study1_SL_long_block)
+```
+
+```{r}
+extractBF(study1_bayes_block_SL)
+```
+
+```{r}
+study1_BF_incl_block_SL <- bayesfactor_inclusion(study1_bayes_block_SL, match_models = TRUE)
+study1_BF_incl_block_SL
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(study1_BF_incl_block_SL)
+```
+
+## visuomotor performance
+### group
+
+```{r}
+study1_bayes_VP <- extractBF(ttestBF(study1_VP_long$VP_score[study1_VP_long$Group == 0], study1_VP_long$VP_score[study1_VP_long$Group == 1]))$bf
+
+# BF_exclusion
+1/as.numeric(study1_bayes_VP)
+```
+
+### learning phase
+
+```{r}
+# whole sample offline
+study1_BF_whole_off_VP <- extractBF(ttestBF(study1_VP_long$VP_score))$bf
+
+# BF01
+1/as.numeric(study1_BF_whole_off_VP)
+```
+
+
+```{r}
+# lower AQ group offline
+lowerAQ_offline <- study1_VP_long %>% 
+  filter(Group == 0)
+
+study1_BF_lowerAQ_off_VP <- extractBF(ttestBF(lowerAQ_offline$VP_score))$bf
+
+# BF01
+1/as.numeric(study1_BF_lowerAQ_off_VP)
+```
+
+```{r}
+# higher AQ group offline
+higherAQ_offline <- study1_VP_long %>% 
+  filter(Group == 1)
+
+study1_BF_higherAQ_off_VP <- extractBF(ttestBF(higherAQ_offline$VP_score))$bf
+
+# BF01
+1/as.numeric(study1_BF_higherAQ_off_VP)
+```
+
+### block x group
+
+```{r}
+study1_bayes_block_VP <- generalTestBF(VP_score ~ Block*Group,
+data = study1_VP_long_block)
+```
+
+```{r}
+extractBF(study1_bayes_block_VP)
+```
+
+```{r}
+study1_BF_incl_block_VP <- bayesfactor_inclusion(study1_bayes_block_VP, match_models = TRUE)
+study1_BF_incl_block_VP
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(study1_BF_incl_block_VP)
+```
+## stat learning
+
+```{r}
+bayes_statlearn <- generalTestBF(stat_learn ~ Triplet*Block*Group,
+data = study1_stat_learn_long)
+```
+
+```{r}
+extractBF(bayes_statlearn)
+```
+
+```{r}
+BF_incl_statlearn <- bayesfactor_inclusion(bayes_statlearn, match_models = TRUE)
+BF_incl_statlearn
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(BF_incl_statlearn)
+```
+
+## visuomotor performance
+
+```{r}
+bayes_visuomotor_perf <- generalTestBF(visuomotor_perf ~ Block*Group,
+data = study1_visuomotor_perf_long)
+```
+
+```{r}
+extractBF(bayes_visuomotor_perf)
+```
+
+```{r}
+BF_incl_visuomotor_perf <- bayesfactor_inclusion(bayes_visuomotor_perf, match_models = TRUE)
+BF_incl_visuomotor_perf
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(BF_incl_visuomotor_perf)
+```
+
+# Study 2
+## statistical learning 
+### group
+
+```{r}
+study2_bayes_SL <- extractBF(ttestBF(study2_SL_long$SL_score[study2_SL_long$Group == 0], study2_SL_long$SL_score[study2_SL_long$Group == 1]))$bf
+
+# BF_exclusion
+1/as.numeric(study2_bayes_SL)
+```
+
+### learning phase
+
+```{r}
+# whole sample offline
+study2_BF_whole_off_SL <- extractBF(ttestBF(study2_SL_long$SL_score))$bf
+
+# BF01
+1/as.numeric(study2_BF_whole_off_SL)
+```
+
+
+```{r}
+# NTP group offline
+NTP_offline <- study2_SL_long %>% 
+  filter(Group == 0)
+
+study2_BF_NTP_off_SL <- extractBF(ttestBF(NTP_offline$SL_score))$bf
+
+# BF01
+1/as.numeric(study2_BF_NTP_off_SL)
+```
+
+```{r}
+# higher AQ group offline
+ASD_offline <- study2_SL_long %>% 
+  filter(Group == 1)
+
+study2_BF_ASD_off_SL <- extractBF(ttestBF(ASD_offline$SL_score))$bf
+
+# BF01
+1/as.numeric(study2_BF_ASD_off_SL)
+```
+
+### block x group
+
+```{r}
+study2_bayes_block_SL <- generalTestBF(SL_score ~ Block*Group,
+data = study2_SL_long_block)
+```
+
+```{r}
+extractBF(study2_bayes_block_SL)
+```
+
+```{r}
+study2_BF_incl_block_SL <- bayesfactor_inclusion(study2_bayes_block_SL, match_models = TRUE)
+study2_BF_incl_block_SL
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(study2_BF_incl_block_SL)
+```
+
+## visuomotor performance
+### learning phase x group
+### group
+
+```{r}
+study2_bayes_VP <- extractBF(ttestBF(study2_VP_long$VP_score[study2_VP_long$Group == 0], study2_VP_long$VP_score[study2_VP_long$Group == 1]))$bf
+
+# BF_exclusion
+1/as.numeric(study2_bayes_VP)
+```
+
+### learning phase
+
+```{r}
+# whole sample offline
+study2_BF_whole_off_VP <- extractBF(ttestBF(study2_VP_long$VP_score))$bf
+
+# BF01
+1/as.numeric(study2_BF_whole_off_VP)
+```
+
+
+```{r}
+# NTP group offline
+NTP_offline <- study2_VP_long %>% 
+  filter(Group == 0)
+
+study2_BF_NTP_off_VP <- extractBF(ttestBF(NTP_offline$VP_score))$bf
+
+# BF01
+1/as.numeric(study2_BF_NTP_off_VP)
+```
+
+```{r}
+# ASD group offline
+ASD_offline <- study2_VP_long %>% 
+  filter(Group == 1)
+
+study2_BF_ASD_off_VP <- extractBF(ttestBF(ASD_offline$VP_score))$bf
+
+# BF01
+1/as.numeric(study2_BF_ASD_off_VP)
+```
+
+### block x group
+
+```{r}
+study2_bayes_block_VP <- generalTestBF(VP_score ~ Block*Group,
+data = study2_VP_long_block)
+```
+
+```{r}
+extractBF(study2_bayes_block_VP)
+```
+
+```{r}
+study2_BF_incl_block_VP <- bayesfactor_inclusion(study2_bayes_block_VP, match_models = TRUE)
+study2_BF_incl_block_VP
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(study2_BF_incl_block_VP)
+```
+
+## stat learning
+
+```{r}
+bayes_statlearn <- generalTestBF(stat_learn ~ Triplet*Block*Group,
+data = study2_stat_learn_long)
+```
+
+```{r}
+extractBF(bayes_statlearn)
+```
+
+```{r}
+BF_incl_statlearn <- bayesfactor_inclusion(bayes_statlearn, match_models = TRUE)
+BF_incl_statlearn
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(BF_incl_statlearn)
+```
+
+## visuomotor performance
+
+```{r}
+bayes_visuomotor_perf <- generalTestBF(visuomotor_perf ~ Block*Group,
+data = study2_visuomotor_perf_long)
+```
+
+```{r}
+extractBF(bayes_visuomotor_perf)
+```
+
+```{r}
+BF_incl_visuomotor_perf <- bayesfactor_inclusion(bayes_visuomotor_perf, match_models = TRUE)
+BF_incl_visuomotor_perf
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(BF_incl_visuomotor_perf)
+```
