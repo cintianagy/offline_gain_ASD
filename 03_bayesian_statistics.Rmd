@@ -316,6 +316,65 @@ study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>%
   drop_na()
 ```
 
+# Study 1 (AQ)
+## statistical learning
+### AQ
+
+```{r}
+study1_bayes_SL <- extractBF(generalTestBF(SL_score ~ AQ_total, data = study1_SL_long))$bf
+
+1/as.numeric(study1_bayes_SL)
+```
+### block x group
+
+```{r}
+study1_bayes_block_SL <- generalTestBF(SL_score ~ Block*AQ_total,
+data = study1_SL_long_block)
+```
+
+```{r}
+extractBF(study1_bayes_block_SL)
+```
+
+```{r}
+study1_BF_incl_block_SL <- bayesfactor_inclusion(study1_bayes_block_SL, match_models = TRUE)
+study1_BF_incl_block_SL
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(study1_BF_incl_block_SL)
+```
+
+## visuomotor learning
+### AQ
+
+```{r}
+study1_bayes_VP <- extractBF(generalTestBF(VP_score ~ AQ_total, data = study1_VP_long))$bf
+
+1/as.numeric(study1_bayes_VP)
+```
+### block x group
+
+```{r}
+study1_bayes_block_VP <- generalTestBF(VP_score ~ Block*AQ_total,
+data = study1_VP_long_block)
+```
+
+```{r}
+extractBF(study1_bayes_block_VP)
+```
+
+```{r}
+study1_BF_incl_block_VP <- bayesfactor_inclusion(study1_bayes_block_VP, match_models = TRUE)
+study1_BF_incl_block_VP
+```
+
+```{r}
+# BF_exclusion
+1/as.numeric(study1_BF_incl_block_VP)
+```
+
 # Study 1 (group)
 ## statistical learning 
 ### group
@@ -444,6 +503,7 @@ study1_BF_incl_block_VP
 # BF_exclusion
 1/as.numeric(study1_BF_incl_block_VP)
 ```
+
 ## stat learning
 
 ```{r}
