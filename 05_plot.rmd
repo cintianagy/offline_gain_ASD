@@ -27,6 +27,7 @@ library(ggplot2)
 # import data
 
 ```{r, message = FALSE}
+study1_general <- read_delim("processed_data/study_1/data_study_1_general.csv", delim = ";")
 study1_SL <- read_csv("processed_data/study_1/data_study_1_SL_offline_online.csv")
 study1_VP <- read_csv("processed_data/study_1/data_study_1_VP_offline_online.csv")
 study1_stat_learn <- read_csv("processed_data/study_1/data_study_1_statistical_learning.csv")
@@ -39,6 +40,12 @@ study2_visuomotor_perf  <- read_csv("processed_data/study_2/data_study_2_visuomo
 
 # preprocess data
 ## Study 1
+
+```{r}
+study1_general$Group[study1_general$Group == 0] <- "lower AQ"
+study1_general$Group[study1_general$Group == 1] <- "higher AQ"
+```
+
 
 ```{r}
 study1_SL_long <- study1_SL %>% 
@@ -75,6 +82,23 @@ study1_VP_long$Learning_phase[study1_VP_long$Learning_phase == "offline_VP"] <- 
 study1_VP_long$Group[study1_VP_long$Group == 0] <- "lower AQ"
 study1_VP_long$Group[study1_VP_long$Group == 1] <- "higher AQ"
 ```
+
+```{r}
+# merge datasets
+study1_SL_VP <- merge(study1_SL_long, study1_VP_long, by = c("Group", "AQ_total", "Subject", "Learning_phase"))
+
+learning_type <- c("SL_score", "VP_score")
+
+study1_SL_VP_long <- pivot_longer(
+  data = study1_SL_VP,
+  cols = learning_type,
+  names_to = c("Learning_type"),
+  values_to = "Learning_score")
+
+study1_SL_VP_long$Learning_type[study1_SL_VP_long$Learning_type == "SL_score"] <- 1
+study1_SL_VP_long$Learning_type[study1_SL_VP_long$Learning_type == "VP_score"] <- 2
+```
+
 
 ```{r}
 # make long dataset
@@ -233,6 +257,23 @@ study2_VP_long$Group[study2_VP_long$Group == 1] <- "ASD"
 ```
 
 ```{r}
+# merge datasets
+study2_SL_VP <- merge(study2_SL_long, study2_VP_long, by = c("Group", "Subject", "Learning_phase"))
+
+learning_type <- c("SL_score", "VP_score")
+
+study2_SL_VP_long <- pivot_longer(
+  data = study2_SL_VP,
+  cols = learning_type,
+  names_to = c("Learning_type"),
+  values_to = "Learning_score")
+
+
+study2_SL_VP_long$Learning_type[study2_SL_VP_long$Learning_type == "SL_score"] <- 1
+study2_SL_VP_long$Learning_type[study2_SL_VP_long$Learning_type == "VP_score"] <- 2
+```
+
+```{r}
 # make long dataset
 study2_SL_long_block <- study2_SL %>% 
   select(c('Group', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
@@ -347,6 +388,34 @@ study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>%
   ungroup()
 ```
 
+# AQ plot
+
+```{r}
+ggplot(study1_general, aes(x = AQ_total)) +
+  geom_histogram(binwidth = 1, colour="black", fill = "#9E7B9B") +
+  geom_vline(aes(xintercept = 32),
+               color="#3b3b3b", size = .5) +
+  xlab("total AQ score") +
+  ylab("Number of participants") +
+  theme_classic()
+
+#ggsave("study1_AQ_distribution.png")
+```
+# AQ plot for median split
+
+```{r}
+ggplot(study1_general, aes(x = AQ_total, fill = factor(Group, levels = c("lower AQ", "higher AQ")))) +
+  geom_histogram(binwidth = 1, position = "dodge", colour="black") +
+  geom_vline(aes(xintercept = 17),
+               color="#3b3b3b", size = .5) +
+  scale_fill_brewer(palette = "Dark2") +
+  xlab("total AQ score") +
+  ylab("Number of participants") +
+  labs(fill = "Group") +
+  theme_classic()
+
+#ggsave("sm_study1_AQ_distribution.png")
+```
 
 # Raincloud plots
 
@@ -389,8 +458,8 @@ GeomFlatViolin <-
       data %>%
         group_by(group) %>%
         mutate(
-          ymin = min(y),
-          ymax = max(y),
+          ymin = -80,
+          ymax = 80,
           xmin = x,
           xmax = x + width / 2
         )
@@ -469,6 +538,37 @@ ggplot(study1_VP_long, aes(x = Learning_phase, y = VP_score, fill = factor(Group
 #ggsave("raincloud_study1_VP.png")
 ```
 
+### statistical learning & visuomotor performance
+
+```{r}
+ggplot(study1_SL_VP_long, aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("lower AQ", "higher AQ"))), show.legend = FALSE) +
+  geom_flat_violin(aes(fill = factor(Group, levels = c("lower AQ", "higher AQ"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA, show.legend = TRUE) +
+  geom_point(aes(x = as.numeric(Learning_type) - .15, colour = factor(Group, levels = c("lower AQ", "higher AQ"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
+  geom_boxplot(aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("lower AQ", "higher AQ"))),outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
+  scale_colour_brewer(palette = "Dark2") +
+  scale_fill_brewer(palette = "Dark2") +
+  xlab("Learning type") +
+  ylab("Mean offline change score (ms)") +
+  scale_x_discrete(labels = c("Statistical learning", "Visuomotor performance")) +
+  theme_classic() +
+  labs(fill = "Group")
+
+#ggsave("raincloud_study1_SL_VP_group.png")
+```
+```{r}
+ggplot(study1_SL_VP_long, aes(x = Learning_type, y = Learning_score), show.legend = FALSE) +
+  geom_point(aes(x = as.numeric(Learning_type) - .15, colour = AQ_total), position = position_jitter(width = .05), size = 1.5, shape = 20, show.legend = TRUE) +
+  geom_boxplot(aes(fill = AQ_total), outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
+  scale_colour_gradient(low = "#1B9E77", high = "#D95F02") +
+  xlab("Measurement type") +
+  ylab("Mean offline change score (ms)") +
+  scale_x_discrete(labels = c("Statistical learning", "Visuomotor performance")) +
+  theme_classic() +
+  labs(colour = "Total AQ score")
+
+#ggsave("raincloud_study1_SL_VP_AQ.png")
+```
+
 ## Study 2
 ### statistical learning
 
@@ -504,6 +604,24 @@ ggplot(study2_VP_long, aes(x = Learning_phase, y = VP_score, fill = factor(Group
   labs(fill = "Group")
 
 #ggsave("raincloud_study2_VP.png")
+```
+
+### statistical learning & visuomotor performance
+
+```{r}
+ggplot(study2_SL_VP_long, aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))), show.legend = FALSE) +
+  geom_flat_violin(aes(fill = factor(Group, levels = c("NTP", "ASD"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA, show.legend = TRUE) +
+  geom_point(aes(x = as.numeric(Learning_type) - .15, colour = factor(Group, levels = c("NTP", "ASD"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
+  geom_boxplot(aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))),outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
+  scale_colour_brewer(palette = "Dark2") +
+  scale_fill_brewer(palette = "Dark2") +
+  xlab("Measurement type") +
+  ylab("Mean offline change score (ms)") +
+  scale_x_discrete(labels = c("Statistical learning", "Visuomotor performance")) +
+  theme_classic() +
+  labs(fill = "Group")
+
+#ggsave("raincloud_study2_SL_VP.png")
 ```
 
 # Learning across blocks
