@@ -392,7 +392,7 @@ study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>%
 
 ```{r}
 ggplot(study1_general, aes(x = AQ_total)) +
-  geom_histogram(binwidth = 1, colour="black", fill = "#9E7B9B") +
+  geom_histogram(binwidth = 1, colour="black", fill = "#22A884") +
   geom_vline(aes(xintercept = 32),
                color="#3b3b3b", size = .5) +
   xlab("total AQ score") +
@@ -408,7 +408,7 @@ ggplot(study1_general, aes(x = AQ_total, fill = factor(Group, levels = c("lower 
   geom_histogram(binwidth = 1, position = "dodge", colour="black") +
   geom_vline(aes(xintercept = 17),
                color="#3b3b3b", size = .5) +
-  scale_fill_brewer(palette = "Dark2") +
+  scale_fill_manual(values = c("#440154", "#fde725")) +
   xlab("total AQ score") +
   ylab("Number of participants") +
   labs(fill = "Group") +
@@ -502,64 +502,13 @@ jitter_nudge <- position_jitternudge(width = .05, height = 2,
 ```
 
 ## Study 1
-### statistical learning
-
-```{r}
-ggplot(study1_SL_long, aes(x = Learning_phase, y = SL_score, fill = factor(Group, levels = c("lower AQ", "higher AQ"))), show.legend = FALSE) +
-  geom_flat_violin(aes(fill = factor(Group, levels = c("lower AQ", "higher AQ"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA, show.legend = TRUE) +
-  geom_point(aes(x = as.numeric(Learning_phase) - .15, colour = factor(Group, levels = c("lower AQ", "higher AQ"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
-  geom_boxplot(aes(x = Learning_phase, y = SL_score, fill = factor(Group, levels = c("lower AQ", "higher AQ"))),outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
-  scale_colour_brewer(palette = "Dark2") +
-  scale_fill_brewer(palette = "Dark2") +
-  xlab("Learning phase") +
-  ylab("Mean statistical learning score (ms)") +
-  scale_x_discrete(labels = "offline") +
-  theme_classic() +
-  labs(fill = "Group")
-
-#ggsave("raincloud_study1_SL.png")
-```
-
-### visuomotor performance
-
-```{r}
-ggplot(study1_VP_long, aes(x = Learning_phase, y = VP_score, fill = factor(Group, levels = c("lower AQ", "higher AQ"))), show.legend = FALSE) +
-  geom_flat_violin(aes(fill = factor(Group, levels = c("lower AQ", "higher AQ"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA, show.legend = TRUE) +
-  geom_point(aes(x = as.numeric(Learning_phase) - .15, colour = factor(Group, levels = c("lower AQ", "higher AQ"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
-  geom_boxplot(aes(x = Learning_phase, y = VP_score, fill = factor(Group, levels = c("lower AQ", "higher AQ"))),outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
-  scale_colour_brewer(palette = "Dark2") +
-  scale_fill_brewer(palette = "Dark2") +
-  xlab("Learning phase") +
-  ylab("Mean visuomotor performance change (ms)") +
-  scale_x_discrete(labels = "offline") +
-  theme_classic() +
-  labs(fill = "Group")
-
-#ggsave("raincloud_study1_VP.png")
-```
-
 ### statistical learning & visuomotor performance
 
-```{r}
-ggplot(study1_SL_VP_long, aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("lower AQ", "higher AQ"))), show.legend = FALSE) +
-  geom_flat_violin(aes(fill = factor(Group, levels = c("lower AQ", "higher AQ"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA, show.legend = TRUE) +
-  geom_point(aes(x = as.numeric(Learning_type) - .15, colour = factor(Group, levels = c("lower AQ", "higher AQ"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
-  geom_boxplot(aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("lower AQ", "higher AQ"))),outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
-  scale_colour_brewer(palette = "Dark2") +
-  scale_fill_brewer(palette = "Dark2") +
-  xlab("Learning type") +
-  ylab("Mean offline change score (ms)") +
-  scale_x_discrete(labels = c("Statistical learning", "Visuomotor performance")) +
-  theme_classic() +
-  labs(fill = "Group")
-
-#ggsave("raincloud_study1_SL_VP_group.png")
-```
 ```{r}
 ggplot(study1_SL_VP_long, aes(x = Learning_type, y = Learning_score), show.legend = FALSE) +
   geom_point(aes(x = as.numeric(Learning_type) - .15, colour = AQ_total), position = position_jitter(width = .05), size = 1.5, shape = 20, show.legend = TRUE) +
   geom_boxplot(aes(fill = AQ_total), outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
-  scale_colour_gradient(low = "#1B9E77", high = "#D95F02") +
+  scale_colour_viridis_c() +
   xlab("Measurement type") +
   ylab("Mean offline change score (ms)") +
   scale_x_discrete(labels = c("Statistical learning", "Visuomotor performance")) +
@@ -570,51 +519,15 @@ ggplot(study1_SL_VP_long, aes(x = Learning_type, y = Learning_score), show.legen
 ```
 
 ## Study 2
-### statistical learning
-
-```{r}
-ggplot(study2_SL_long, aes(x = Learning_phase, y = SL_score, fill = factor(Group, levels = c("NTP", "ASD"))), show.legend = FALSE) +
-  geom_flat_violin(aes(fill = factor(Group, levels = c("NTP", "ASD"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA, show.legend = TRUE) +
-  geom_point(aes(x = as.numeric(Learning_phase) - .15, colour = factor(Group, levels = c("NTP", "ASD"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
-  geom_boxplot(aes(x = Learning_phase, y = SL_score, fill = factor(Group, levels = c("NTP", "ASD"))),outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) + 
-  scale_colour_brewer(palette = "Dark2") +
-  scale_fill_brewer(palette = "Dark2") +
-  xlab("Learning phase") +
-  ylab("Mean statistical learning score (ms)") +
-  scale_x_discrete(labels = c("offline", "online")) +
-  theme_classic() +
-  labs(fill = "Group")
-
-#ggsave("raincloud_study2_SL.png")
-```
-
-### visuomotor performance
-
-```{r}
-ggplot(study2_VP_long, aes(x = Learning_phase, y = VP_score, fill = factor(Group, levels = c("NTP", "ASD"))), show.legend = FALSE) +
-  geom_flat_violin(aes(fill = factor(Group, levels = c("NTP", "ASD"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA, show.legend = TRUE) +
-  geom_point(aes(x = as.numeric(Learning_phase) - .15, colour = factor(Group, levels = c("NTP", "ASD"))), position = position_jitter(width = .05),size = 1, shape = 20, show.legend = FALSE) +
-  geom_boxplot(aes(x = Learning_phase, y = VP_score, fill = factor(Group, levels = c("NTP", "ASD"))),outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
-  scale_colour_brewer(palette = "Dark2") +
-  scale_fill_brewer(palette = "Dark2") +
-  xlab("Learning phase") +
-  ylab("Mean visuomotor performance change (ms)") +
-  scale_x_discrete(labels = c("offline", "online")) +
-  theme_classic() +
-  labs(fill = "Group")
-
-#ggsave("raincloud_study2_VP.png")
-```
-
 ### statistical learning & visuomotor performance
 
 ```{r}
 ggplot(study2_SL_VP_long, aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))), show.legend = FALSE) +
-  geom_flat_violin(aes(fill = factor(Group, levels = c("NTP", "ASD"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA, show.legend = TRUE) +
+  geom_flat_violin(aes(fill = factor(Group, levels = c("NTP", "ASD"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .8, colour = NA, show.legend = TRUE) +
   geom_point(aes(x = as.numeric(Learning_type) - .15, colour = factor(Group, levels = c("NTP", "ASD"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
-  geom_boxplot(aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))),outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
-  scale_colour_brewer(palette = "Dark2") +
-  scale_fill_brewer(palette = "Dark2") +
+  geom_boxplot(aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))),outlier.shape = NA, alpha = .8, width = .1, colour = "black", show.legend = FALSE) +
+  scale_color_manual(values = c("#440154", "#fde725")) +
+  scale_fill_manual(values = c("#440154", "#fde725")) +
   xlab("Measurement type") +
   ylab("Mean offline change score (ms)") +
   scale_x_discrete(labels = c("Statistical learning", "Visuomotor performance")) +
@@ -633,7 +546,7 @@ ggplot(study1_SL_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(
   geom_point() +
   geom_line() +
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
-  scale_colour_brewer(palette = "Dark2") +
+  scale_color_manual(values = c("#440154", "#fde725")) +
   labs(x = "Block", y = "Statistical learning score (ms)", colour = "Group") +
   theme_classic()
 
@@ -647,7 +560,7 @@ ggplot(study1_VP_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(
   geom_point() +
   geom_line() +
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
-  scale_colour_brewer(palette = "Dark2") +
+  scale_color_manual(values = c("#440154", "#fde725")) +
   labs(x = "Block", y = "Visuomotor performance change (ms)", colour = "Group") +
   theme_classic()
 
@@ -662,7 +575,7 @@ ggplot(study2_SL_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(
   geom_point() +
   geom_line() +
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
-  scale_colour_brewer(palette = "Dark2") +
+  scale_color_manual(values = c("#440154", "#fde725")) +
   labs(x = "Block", y = "Statistical learning score (ms)", colour = "Group") +
   theme_classic()
 
@@ -676,8 +589,8 @@ ggplot(study2_VP_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(
   geom_point() +
   geom_line() +
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
-  scale_colour_brewer(palette = "Dark2") +
-  labs(x = "Block", y = "Visuomotor performance change (ms)", colour = "Learning phase") +
+  scale_color_manual(values = c("#440154", "#fde725")) +
+  labs(x = "Block", y = "Visuomotor performance change (ms)", colour = "Group") +
   theme_classic()
 
 #ggsave("sm_study2_VP.png")
@@ -726,7 +639,7 @@ ggplot(study1_visuomotor_perf_long, aes(x = as.numeric(Block), y = rt, color = a
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
   scale_x_continuous(labels = c("1" = "1-5", "2" = "5-10", "3" = "11-15", "4" = "16-20", "5" = "21-25")) +
   labs(x = "Blocks", y = "Reaction time (ms)", color = "Group") +
-  scale_color_brewer(palette = "Dark2", labels = c("lower AQ", "higher AQ")) +
+  scale_color_manual(values = c("#440154", "#fde725"), labels = c("lower AQ", "higher AQ")) +
   theme_classic()
 
 #ggsave("sm_study1_visuomotor_perf.png")
@@ -741,7 +654,7 @@ ggplot(study2_visuomotor_perf_long, aes(x = as.numeric(Block), y = rt, color = a
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
   scale_x_continuous(labels = c("1" = "1-5", "2" = "5-10", "3" = "11-15", "4" = "16-20")) +
   labs(x = "Blocks", y = "Reaction time (ms)", color = "Group") +
-  scale_color_brewer(palette = "Dark2", labels = c("NTP", "ASD")) +
+  scale_color_manual(values = c("#440154", "#fde725"), labels = c("NTP", "ASD")) +
   theme_classic()
 
 #ggsave("sm_study2_visuomotor_perf.png")
