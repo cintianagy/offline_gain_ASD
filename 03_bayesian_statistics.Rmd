@@ -551,10 +551,17 @@ BF_incl_visuomotor_perf
 ### group
 
 ```{r}
-study2_bayes_SL <- extractBF(ttestBF(study2_SL_long$SL_score[study2_SL_long$Group == 0], study2_SL_long$SL_score[study2_SL_long$Group == 1]))$bf
+study2_bayes_SL <- generalTestBF(SL_score ~ Group, study2_SL_long)
+```
 
-# BF_exclusion
-1/as.numeric(study2_bayes_SL)
+```{r}
+study2_BF_SL <- extractBF(study2_bayes_SL)$bf
+```
+
+
+```{r}
+# BF01
+1/as.numeric(study2_BF_SL)
 ```
 
 ### learning phase
@@ -616,10 +623,16 @@ study2_BF_incl_block_SL
 ### group
 
 ```{r}
-study2_bayes_VP <- extractBF(ttestBF(study2_VP_long$VP_score[study2_VP_long$Group == 0], study2_VP_long$VP_score[study2_VP_long$Group == 1]))$bf
+study2_bayes_VP <- generalTestBF(VP_score ~ Group, study2_VP_long)
+```
 
-# BF_exclusion
-1/as.numeric(study2_bayes_VP)
+```{r}
+study2_BF_VP <- extractBF(study2_bayes_VP)$bf
+```
+
+```{r}
+# BF01
+1/as.numeric(study2_BF_VP)
 ```
 
 ### learning phase
