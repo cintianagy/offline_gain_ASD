@@ -366,6 +366,7 @@ lillie.test(AQ_model_VP_residuals)
 # normality test for learning_score
 lillie.test(study1_VP_long$VP_score)
 ```
+
 ### baseline model for VP
 
 ```{r}
@@ -463,7 +464,6 @@ confint(baseline_model_boot_residual, type = "norm")
 ```{r}
 study2_SL_anova <- anova_test(data = study2_SL_long, wid = "Subject", dv = "SL_score", between = "Group", effect.size = "pes")
 
-# greenhouse-geisser correction
 get_anova_table(study2_SL_anova)
 ```
 
@@ -620,11 +620,14 @@ chisq.test(study2_VP_offline_table, correct = FALSE)
 shapiro_test(study1_SL_long$SL_score)
 # homogeneity of variance test
 var.test(SL_score ~ Group, data = study1_SL_long)
-
-# t-test
-t.test(SL_score ~ Group, data = study1_SL_long, var.equal = T)
-cohens_d(study1_SL_long, SL_score ~ 1)
 ```
+
+```{r}
+study1_SL_anova <- anova_test(data = study1_SL_long, wid = "Subject", dv = "SL_score", between = "Group", effect.size = "pes")
+
+get_anova_table(study1_SL_anova)
+```
+
 ```{r}
 # whole offline
 mean(study1_SL_long$SL_score)
@@ -693,10 +696,12 @@ chisq.test(study1_SL_offline_table, correct = FALSE)
 shapiro_test(study1_VP_long$VP_score)
 # homogeneity of variance test
 var.test(VP_score ~ Group, data = study1_VP_long)
+```
 
-# t-test
-t.test(VP_score ~ Group, data = study1_VP_long, var.equal = T)
-cohens_d(study1_VP_long, VP_score ~ 1)
+```{r}
+study1_VP_anova <- anova_test(data = study1_VP_long, wid = "Subject", dv = "VP_score", between = "Group", effect.size = "pes")
+
+get_anova_table(study1_VP_anova)
 ```
 
 ```{r}

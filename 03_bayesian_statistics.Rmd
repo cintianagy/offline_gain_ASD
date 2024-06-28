@@ -380,10 +380,16 @@ study1_BF_incl_block_VP
 ### group
 
 ```{r}
-study1_bayes_SL <- extractBF(ttestBF(study1_SL_long$SL_score[study1_SL_long$Group == 0], study1_SL_long$SL_score[study1_SL_long$Group == 1]))$bf
+study1_bayes_SL <- generalTestBF(SL_score ~ Group, study1_SL_long)
+```
 
-# BF_exclusion
-1/as.numeric(study1_bayes_SL)
+```{r}
+study1_BF_SL <- extractBF(study1_bayes_SL)$bf
+```
+
+```{r}
+# BF01
+1/as.numeric(study1_BF_SL)
 ```
 
 ### learning phase
@@ -444,10 +450,16 @@ study1_BF_incl_block_SL
 ### group
 
 ```{r}
-study1_bayes_VP <- extractBF(ttestBF(study1_VP_long$VP_score[study1_VP_long$Group == 0], study1_VP_long$VP_score[study1_VP_long$Group == 1]))$bf
+study1_bayes_VP <- generalTestBF(VP_score ~ Group, study1_VP_long)
+```
 
-# BF_exclusion
-1/as.numeric(study1_bayes_VP)
+```{r}
+study1_BF_VP <- extractBF(study1_bayes_VP)$bf
+```
+
+```{r}
+# BF01
+1/as.numeric(study1_BF_VP)
 ```
 
 ### learning phase
