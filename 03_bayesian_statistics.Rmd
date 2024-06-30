@@ -325,6 +325,7 @@ study1_bayes_SL <- extractBF(generalTestBF(SL_score ~ AQ_total, data = study1_SL
 
 1/as.numeric(study1_bayes_SL)
 ```
+
 ### block x group
 
 ```{r}
@@ -354,6 +355,7 @@ study1_bayes_VP <- extractBF(generalTestBF(VP_score ~ AQ_total, data = study1_VP
 
 1/as.numeric(study1_bayes_VP)
 ```
+
 ### block x group
 
 ```{r}
@@ -586,7 +588,6 @@ study2_BF_whole_off_SL <- extractBF(ttestBF(study2_SL_long$SL_score))$bf
 1/as.numeric(study2_BF_whole_off_SL)
 ```
 
-
 ```{r}
 # NTP group offline
 NTP_offline <- study2_SL_long %>% 
@@ -656,7 +657,6 @@ study2_BF_whole_off_VP <- extractBF(ttestBF(study2_VP_long$VP_score))$bf
 # BF01
 1/as.numeric(study2_BF_whole_off_VP)
 ```
-
 
 ```{r}
 # NTP group offline

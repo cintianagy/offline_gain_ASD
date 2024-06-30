@@ -385,7 +385,6 @@ study2_visuomotor_perf_anova
 get_anova_table(study2_visuomotor_perf_anova, correction = c("GG"))
 ```
 
-
 # Study 1 (group)
 ## stat learning: triplet x block x group
 

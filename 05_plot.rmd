@@ -99,7 +99,6 @@ study1_SL_VP_long$Learning_type[study1_SL_VP_long$Learning_type == "SL_score"] <
 study1_SL_VP_long$Learning_type[study1_SL_VP_long$Learning_type == "VP_score"] <- 2
 ```
 
-
 ```{r}
 # make long dataset
 study1_SL_long_block <- study1_SL %>% 
@@ -159,7 +158,6 @@ study1_VP_long_block <- study1_VP_long_block %>%
   summarise(rt = mean(VP_score, na.rm = T), se = std.error(VP_score, na.rm = T)) %>% 
   ungroup()
 ```
-
 
 ```{r}
 study1_stat_learn_long <- study1_stat_learn %>% 
@@ -401,6 +399,7 @@ ggplot(study1_general, aes(x = AQ_total)) +
 
 #ggsave("study1_AQ_distribution.png")
 ```
+
 # AQ plot for median split
 
 ```{r}

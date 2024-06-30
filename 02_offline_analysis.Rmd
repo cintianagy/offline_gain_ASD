@@ -237,7 +237,6 @@ lillie.test(AQ_model_SL_residuals)
 lillie.test(study1_SL_long$SL_score)
 ```
 
-
 ### baseline model for SL
 
 ```{r}
@@ -611,7 +610,6 @@ study2_VP_offline_table
 chisq.test(study2_VP_offline_table, correct = FALSE)
 ```
 
-
 # Study 1 (group)
 ## statistical learning
 ### group
@@ -764,4 +762,3 @@ study1_VP_offline_table = table(study1_VP$Group, study1_VP$is_learn_offline)
 study1_VP_offline_table
 chisq.test(study1_VP_offline_table, correct = FALSE)
 ```
-
