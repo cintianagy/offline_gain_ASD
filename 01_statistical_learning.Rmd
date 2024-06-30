@@ -31,7 +31,7 @@ study2_visuomotor_perf  <- read_csv("processed_data/study_2/data_study_2_visuomo
 ```
 
 # preprocess data
-## Study 1
+## Study 1 (AQ)
 
 ```{r}
 study1_stat_learn_long <- study1_stat_learn %>% 
@@ -131,7 +131,51 @@ study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>%
   mutate(Block = gsub('e', "", Blocks))
 ```
 
-# Study 1
+## Study 1 (AQ)
+
+```{r}
+study1_stat_learn_long <- study1_stat_learn %>% 
+  select(c('Group', 'Subject', 'e1_H','e2_H','e3_H','e4_H','e5_H', 'e1_L','e2_L','e3_L','e4_L','e5_L'))
+
+blocks <- c('e1','e2','e3','e4','e5')
+
+study1_stat_learn_long <- pivot_longer(
+  data = study1_stat_learn_long,
+  cols = starts_with(blocks),
+  names_to = c(".value", "Triplet"),
+  names_pattern = "([^_]+)_(\\D+)",
+  values_to = "Triplet"
+)
+
+study1_stat_learn_long <- pivot_longer(
+  data = study1_stat_learn_long,
+  cols = starts_with(blocks),
+  names_to = c("Blocks"),
+  values_to = "stat_learn"
+)
+
+study1_stat_learn_long <- study1_stat_learn_long %>% 
+  mutate(Block = gsub('e', "", Blocks))
+```
+
+```{r}
+study1_visuomotor_perf_long <- study1_visuomotor_perf %>% 
+  select(c('Group', 'Subject', 'e1','e2','e3','e4', 'e5'))
+
+blocks <- c('e1','e2','e3','e4', 'e5')
+
+study1_visuomotor_perf_long <- pivot_longer(
+  data = study1_visuomotor_perf_long,
+  cols = starts_with(blocks),
+  names_to = c("Blocks"),
+  values_to = "visuomotor_perf"
+)
+
+study1_visuomotor_perf_long <- study1_visuomotor_perf_long %>% 
+  mutate(Block = gsub('e', "", Blocks))
+```
+
+# Study 1 (AQ)
 ## stat learning: triplet x block x AQ
 ### baseline model for statistical learning
 
@@ -216,6 +260,7 @@ AIC_study1_stat_learn_AQ
 BIC_study1_stat_learn_baseline
 BIC_study1_stat_learn_AQ
 ```
+
 ### Bootstrapping
 
 ```{r}
@@ -225,7 +270,6 @@ confint(baseline_model_boot_residual, type = "norm")
 ```
 
 ## visuomotor performance learning: block x AQ
-
 ### baseline model for visuomotor performance
 
 ```{r}
@@ -295,7 +339,8 @@ lillie.test(study1_visuomotor_perf_long$visuomotor_perf)
 ```{r}
 anova(study1_visuomotor_perf_baseline, study1_visuomotor_perf_AQ)
 ```
-### Bootstrapping
+
+ ### Bootstrapping
 
 ```{r}
 baseline_model_boot_residual <- bootstrap(study1_visuomotor_perf_baseline, .f = fixef, B = 1000,  type = "residual", resample = c(TRUE, TRUE))
@@ -338,4 +383,30 @@ study2_visuomotor_perf_anova
 ```{r}
 # greenhouse-geisser correction
 get_anova_table(study2_visuomotor_perf_anova, correction = c("GG"))
+```
+
+
+# Study 1 (group)
+## stat learning: triplet x block x group
+
+```{r}
+study1_stat_learn_anova <- anova_test(data = study1_stat_learn_long, wid = "Subject", dv = "stat_learn", between = "Group", within = c("Triplet", "Block"), effect.size = "pes")
+study1_stat_learn_anova
+```
+
+```{r}
+# greenhouse-geisser correction
+get_anova_table(study1_stat_learn_anova, correction = c("GG"))
+```
+
+## visuomotor performance: block x group
+
+```{r}
+study1_visuomotor_perf_anova <- anova_test(data = study1_visuomotor_perf_long, wid = "Subject", dv = "visuomotor_perf", between = "Group", within = c("Block"), effect.size = "pes")
+study1_visuomotor_perf_anova
+```
+
+```{r}
+# greenhouse-geisser correction
+get_anova_table(study1_visuomotor_perf_anova, correction = c("GG"))
 ```

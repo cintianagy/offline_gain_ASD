@@ -449,6 +449,7 @@ AIC_AQ_model_VP
 BIC_baseline_model_VP
 BIC_AQ_model_VP
 ```
+
 ### Bootstrapping
 
 ```{r}
