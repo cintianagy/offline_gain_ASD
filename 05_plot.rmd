@@ -391,7 +391,7 @@ study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>%
 ```{r}
 ggplot(study1_general, aes(x = AQ_total)) +
   geom_histogram(binwidth = 1, colour="black", fill = "#22A884") +
-  geom_vline(aes(xintercept = 32),
+  geom_vline(aes(xintercept = 26),
                color="#3b3b3b", size = .5) +
   xlab("total AQ score") +
   ylab("Number of participants") +
