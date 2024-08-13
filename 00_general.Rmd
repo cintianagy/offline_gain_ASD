@@ -18,6 +18,7 @@ library(rstatix)
 ```{r message = FALSE}
 study1 <- read_delim("processed_data/study_1/data_study_1_general.csv", delim = ';')
 study2 <- read_delim("processed_data/study_2/data_study_2_general.csv", delim = ';')
+study2_cog_tasks <- read_csv("processed_data/study_2/data_study_2_cognitive_tasks.csv")
 ```
 
 # preprocess data
@@ -38,8 +39,7 @@ study1_higherAQ <- study1 %>%
 
 ```{r}
 study2 <- study2 %>% 
-  mutate(age = as.numeric(age),
-         CSPAN = as.numeric(CSPAN))
+  mutate(age = as.numeric(age))
 
 study2_NTP <- study2 %>% 
   filter(Group == 0)
@@ -115,16 +115,79 @@ study2_sex_table
 chisq.test(study2_sex_table, correct = FALSE)
 ```
 
-## cognitive capacity
+## cognitive profile
 
 ```{r}
-shapiro.test(study2_NTP$CSPAN)
-shapiro.test(study2_ASD$CSPAN)
-mean(study2_NTP$CSPAN)
-sd(study2_NTP$CSPAN)
-mean(study2_ASD$CSPAN)
-sd(study2_ASD$CSPAN)
-t.test(study2_NTP$CSPAN, study2_ASD$CSPAN)
-cohens_d(study2, CSPAN ~ Group)
+study2_cog_NTP <- study2_cog_tasks %>% 
+  filter(Group == 0)
+
+study2_cog_ASD <- study2_cog_tasks %>% 
+  filter(Group == 1)
 ```
+
+### DSPAN
+
+```{r}
+shapiro.test(study2_cog_NTP$dspan)
+shapiro.test(study2_cog_ASD$dspan)
+mean(study2_cog_NTP$dspan)
+sd(study2_cog_NTP$dspan)
+mean(study2_cog_ASD$dspan)
+sd(study2_cog_ASD$dspan)
+t.test(dspan ~ Group, data = study2_cog_tasks, var.equal = TRUE)
+cohens_d(study2_cog_tasks, dspan ~ Group)
+```
+
+### CSPAN
+
+```{r}
+shapiro.test(study2_cog_NTP$cspan)
+shapiro.test(study2_cog_ASD$cspan)
+mean(study2_cog_NTP$cspan)
+sd(study2_cog_NTP$cspan)
+mean(study2_cog_ASD$cspan)
+sd(study2_cog_ASD$cspan)
+t.test(cspan ~ Group, data = study2_cog_tasks, var.equal = TRUE)
+cohens_d(study2_cog_tasks, cspan ~ Group)
+```
+
+### BCST
+
+```{r}
+shapiro.test(study2_cog_NTP$PersErrorP)
+shapiro.test(study2_cog_ASD$PersErrorP)
+mean(study2_cog_NTP$PersErrorP)
+sd(study2_cog_NTP$PersErrorP)
+mean(study2_cog_ASD$PersErrorP)
+sd(study2_cog_ASD$PersErrorP)
+wilcox.test(study2_cog_NTP$PersErrorP, study2_cog_ASD$PersErrorP)
+wilcox_effsize(study2_cog_tasks, PersErrorP ~ Group)
+```
+
+### GNG
+
+```{r}
+shapiro.test(study2_cog_NTP$dprime_s1)
+shapiro.test(study2_cog_ASD$dprime_s1)
+mean(study2_cog_NTP$dprime_s1)
+sd(study2_cog_NTP$dprime_s1)
+mean(study2_cog_ASD$dprime_s1)
+sd(study2_cog_ASD$dprime_s1)
+t.test(dprime_s1 ~ Group, data = study2_cog_tasks, var.equal = TRUE)
+cohens_d(study2_cog_tasks, dprime_s1 ~ Group)
+```
+
+```{r}
+shapiro.test(study2_cog_NTP$dprime_s2)
+shapiro.test(study2_cog_ASD$dprime_s2)
+mean(study2_cog_NTP$dprime_s2)
+sd(study2_cog_NTP$dprime_s2)
+mean(study2_cog_ASD$dprime_s2)
+sd(study2_cog_ASD$dprime_s2)
+wilcox.test(study2_cog_NTP$dprime_s2, study2_cog_ASD$dprime_s2)
+wilcox_effsize(study2_cog_tasks, dprime_s2 ~ Group)
+```
+
+
+
 
