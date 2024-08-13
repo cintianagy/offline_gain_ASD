@@ -1,5 +1,5 @@
 ---
-title: "offline analysis"
+title: "online analysis"
 author: "Cintia Anna Nagy"
 date: "`r Sys.Date()`"
 output: html_document
@@ -37,9 +37,9 @@ study2_VP <- read_csv("processed_data/study_2/data_study_2_VP_offline_online.csv
 ```{r}
 # make long dataset
 study1_SL_long <- study1_SL %>% 
-  select(c('Group', 'AQ_total', 'Subject', 'offline_SL'))
+  select(c('Group', 'AQ_total', 'Subject', 'online_SL'))
 
-learning_phase <- c('offline_SL')
+learning_phase <- c('online_SL')
 
 study1_SL_long <- pivot_longer(
   data = study1_SL_long,
@@ -55,9 +55,9 @@ study1_SL_long <- study1_SL_long %>%
 ```{r}
 # make long dataset
 study1_VP_long <- study1_VP %>% 
-  select(c('Group', 'AQ_total', 'Subject', 'offline_VP'))
+  select(c('Group', 'AQ_total', 'Subject', 'online_VP'))
 
-learning_phase <- c('offline_VP')
+learning_phase <- c('online_VP')
 
 study1_VP_long <- pivot_longer(
   data = study1_VP_long,
@@ -73,8 +73,8 @@ study1_VP_long <- study1_VP_long %>%
 ```{r}
 # make long dataset
 study1_SL_long_block <- study1_SL %>% 
-  select(c('Group', 'AQ_total', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
-                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline', 'block21_offline', 'block22_offline','block23_offline', 'block24_offline','block25_offline'))
+  select(c('Group', 'AQ_total', 'Subject', 'block2_online','block3_online', 'block4_online','block5_online', 'block6_online','block7_online', 'block8_online','block9_online', 'block10_online',
+                                       'block11_online', 'block12_online','block13_online', 'block14_online','block15_online', 'block16_online', 'block17_online','block18_online', 'block19_online','block20_online', 'block21_online', 'block22_online','block23_online', 'block24_online','block25_online'))
 
 blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
                'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
@@ -88,7 +88,7 @@ study1_SL_long_block <- pivot_longer(
 )
 
 study1_SL_long_block <- study1_SL_long_block %>% 
-  mutate(Block = gsub('_offline', "", Block)) %>% 
+  mutate(Block = gsub('_online', "", Block)) %>% 
   mutate(Block = gsub('block', "", Block))
 
 study1_SL_long_block <- study1_SL_long_block %>% 
@@ -100,8 +100,8 @@ study1_SL_long_block <- study1_SL_long_block %>%
 ```{r}
 # make long dataset
 study1_VP_long_block <- study1_VP %>% 
-  select(c('Group', 'AQ_total', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
-                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline', 'block21_offline', 'block22_offline','block23_offline', 'block24_offline','block25_offline'))
+  select(c('Group', 'AQ_total', 'Subject', 'block2_online','block3_online', 'block4_online','block5_online', 'block6_online','block7_online', 'block8_online','block9_online', 'block10_online',
+                                       'block11_online', 'block12_online','block13_online', 'block14_online','block15_online', 'block16_online', 'block17_online','block18_online', 'block19_online','block20_online', 'block21_online', 'block22_online','block23_online', 'block24_online','block25_online'))
 
 blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
                'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
@@ -115,7 +115,7 @@ study1_VP_long_block <- pivot_longer(
 )
 
 study1_VP_long_block <- study1_VP_long_block %>% 
-  mutate(Block = gsub('_offline', "", Block)) %>% 
+  mutate(Block = gsub('_online', "", Block)) %>% 
   mutate(Block = gsub('block', "", Block))
 
 study1_VP_long_block <- study1_VP_long_block %>% 
@@ -129,9 +129,9 @@ study1_VP_long_block <- study1_VP_long_block %>%
 ```{r}
 # make long dataset
 study2_SL_long <- study2_SL %>% 
-  select(c('Group', 'Subject', 'offline_SL'))
+  select(c('Group', 'Subject', 'online_SL'))
 
-learning_phase <- c('offline_SL')
+learning_phase <- c('online_SL')
 
 study2_SL_long <- pivot_longer(
   data = study2_SL_long,
@@ -144,9 +144,9 @@ study2_SL_long <- pivot_longer(
 ```{r}
 # make long dataset
 study2_VP_long <- study2_VP %>% 
-  select(c('Group', 'Subject', 'offline_VP'))
+  select(c('Group', 'Subject', 'online_VP'))
 
-learning_phase <- c('offline_VP')
+learning_phase <- c('online_VP')
 
 study2_VP_long <- pivot_longer(
   data = study2_VP_long,
@@ -159,8 +159,8 @@ study2_VP_long <- pivot_longer(
 ```{r}
 # make long dataset
 study2_SL_long_block <- study2_SL %>% 
-  select(c('Group', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
-                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline'))
+  select(c('Group', 'Subject', 'block2_online','block3_online', 'block4_online','block5_online', 'block6_online','block7_online', 'block8_online','block9_online', 'block10_online',
+                                       'block11_online', 'block12_online','block13_online', 'block14_online','block15_online', 'block16_online', 'block17_online','block18_online', 'block19_online','block20_online'))
 
 blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
                'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
@@ -174,15 +174,15 @@ study2_SL_long_block <- pivot_longer(
 )
 
 study2_SL_long_block <- study2_SL_long_block %>% 
-    mutate(Block = gsub('_offline', "", Block)) %>% 
+    mutate(Block = gsub('_online', "", Block)) %>% 
     mutate(Block = gsub('block', "", Block))
 ```
 
 ```{r}
 # make long dataset
 study2_VP_long_block <- study2_VP %>% 
-  select(c('Group', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
-                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline'))
+  select(c('Group', 'Subject', 'block2_online','block3_online', 'block4_online','block5_online', 'block6_online','block7_online', 'block8_online','block9_online', 'block10_online',
+                                       'block11_online', 'block12_online','block13_online', 'block14_online','block15_online', 'block16_online', 'block17_online','block18_online', 'block19_online','block20_online'))
 
 blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
                'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
@@ -196,7 +196,7 @@ study2_VP_long_block <- pivot_longer(
 )
 
 study2_VP_long_block <- study2_VP_long_block %>% 
-  mutate(Block = gsub('_offline', "", Block)) %>% 
+  mutate(Block = gsub('_online', "", Block)) %>% 
   mutate(Block = gsub('block', "", Block))
 ```
 
@@ -475,7 +475,7 @@ var.test(SL_score ~ Group, data = study2_SL_long)
 ```
 
 ```{r}
-# whole offline
+# whole online
 mean(study2_SL_long$SL_score)
 sd(study2_SL_long$SL_score)
 
@@ -488,33 +488,33 @@ cohens_d(study2_SL_long, SL_score ~ 1)
 ```
 
 ```{r}
-# NTP group offline
-NTP_offline <- study2_SL_long %>% 
+# NTP group online
+NTP_online <- study2_SL_long %>% 
   filter(Group == 0)
-mean(NTP_offline$SL_score)
-sd(NTP_offline$SL_score)
+mean(NTP_online$SL_score)
+sd(NTP_online$SL_score)
 
 # normality test
-shapiro_test(NTP_offline$SL_score)
+shapiro_test(NTP_online$SL_score)
 
 # t-test
-t.test(NTP_offline$SL_score)
-cohens_d(NTP_offline, SL_score ~ 1)
+t.test(NTP_online$SL_score)
+cohens_d(NTP_online, SL_score ~ 1)
 ```
 
 ```{r}
-# ASD group offline
-ASD_offline <- study2_SL_long %>% 
+# ASD group online
+ASD_online <- study2_SL_long %>% 
   filter(Group == 1)
-mean(ASD_offline$SL_score)
-sd(ASD_offline$SL_score)
+mean(ASD_online$SL_score)
+sd(ASD_online$SL_score)
 
 # normality test
-shapiro_test(ASD_offline$SL_score)
+shapiro_test(ASD_online$SL_score)
 
 # t-test
-t.test(ASD_offline$SL_score)
-cohens_d(ASD_offline, SL_score ~ 1)
+t.test(ASD_online$SL_score)
+cohens_d(ASD_online, SL_score ~ 1)
 ```
 
 ### block x group
@@ -529,9 +529,9 @@ get_anova_table(study2_block_SL_anova, correction = c("GG"))
 ### chi-square test
 
 ```{r}
-study2_SL_offline_table = table(study2_SL$Group, study2_SL$is_learn_offline)
-study2_SL_offline_table
-chisq.test(study2_SL_offline_table, correct = FALSE)
+study2_SL_online_table = table(study2_SL$Group, study2_SL$is_learn_online)
+study2_SL_online_table
+chisq.test(study2_SL_online_table, correct = FALSE)
 ```
 
 ## visuomotor performance
@@ -551,7 +551,7 @@ var.test(VP_score ~ Group, data = study2_VP_long)
 ```
 
 ```{r}
-# whole offline
+# whole online
 mean(study2_VP_long$VP_score)
 sd(study2_VP_long$VP_score)
 
@@ -564,33 +564,33 @@ cohens_d(study2_VP_long, VP_score ~ 1)
 ```
 
 ```{r}
-# NTP group offline
-NTP_offline <- study2_VP_long %>% 
+# NTP group online
+NTP_online <- study2_VP_long %>% 
   filter(Group == 0)
-mean(NTP_offline$VP_score)
-sd(NTP_offline$VP_score)
+mean(NTP_online$VP_score)
+sd(NTP_online$VP_score)
 
 # normality test
-shapiro_test(NTP_offline$VP_score)
+shapiro_test(NTP_online$VP_score)
 
 # t-test
-t.test(NTP_offline$VP_score)
-cohens_d(NTP_offline, VP_score ~ 1)
+t.test(NTP_online$VP_score)
+cohens_d(NTP_online, VP_score ~ 1)
 ```
 
 ```{r}
-# ASD group offline
-ASD_offline <- study2_VP_long %>% 
+# ASD group online
+ASD_online <- study2_VP_long %>% 
   filter(Group == 1)
-mean(ASD_offline$VP_score)
-sd(ASD_offline$VP_score)
+mean(ASD_online$VP_score)
+sd(ASD_online$VP_score)
 
 # normality test
-shapiro_test(ASD_offline$VP_score)
+shapiro_test(ASD_online$VP_score)
 
 # t-test
-t.test(ASD_offline$VP_score)
-cohens_d(ASD_offline, VP_score ~ 1)
+t.test(ASD_online$VP_score)
+cohens_d(ASD_online, VP_score ~ 1)
 ```
 
 ### block x group
@@ -605,9 +605,9 @@ get_anova_table(study2_block_VP_anova, correction = c("GG"))
 ### chi-square test
 
 ```{r}
-study2_VP_offline_table = table(study2_VP$Group, study2_VP$is_learn_offline)
-study2_VP_offline_table
-chisq.test(study2_VP_offline_table, correct = FALSE)
+study2_VP_online_table = table(study2_VP$Group, study2_VP$is_learn_online)
+study2_VP_online_table
+chisq.test(study2_VP_online_table, correct = FALSE)
 ```
 
 # Study 1 (group)
@@ -628,7 +628,7 @@ get_anova_table(study1_SL_anova)
 ```
 
 ```{r}
-# whole offline
+# whole online
 mean(study1_SL_long$SL_score)
 sd(study1_SL_long$SL_score)
 
@@ -641,33 +641,33 @@ cohens_d(study1_SL_long, SL_score ~ 1)
 ```
 
 ```{r}
-# lowerAQ group offline
-lowerAQ_offline <- study1_SL_long %>% 
+# lowerAQ group online
+lowerAQ_online <- study1_SL_long %>% 
   filter(Group == 0)
-mean(lowerAQ_offline$SL_score)
-sd(lowerAQ_offline$SL_score)
+mean(lowerAQ_online$SL_score)
+sd(lowerAQ_online$SL_score)
 
 # normality test
-shapiro_test(lowerAQ_offline$SL_score)
+shapiro_test(lowerAQ_online$SL_score)
 
 # t-test
-t.test(lowerAQ_offline$SL_score)
-cohens_d(lowerAQ_offline, SL_score ~ 1)
+t.test(lowerAQ_online$SL_score)
+cohens_d(lowerAQ_online, SL_score ~ 1)
 ```
 
 ```{r}
-# higherAQ group offline
-higherAQ_offline <- study1_SL_long %>% 
+# higherAQ group online
+higherAQ_online <- study1_SL_long %>% 
   filter(Group == 1)
-mean(higherAQ_offline$SL_score)
-sd(higherAQ_offline$SL_score)
+mean(higherAQ_online$SL_score)
+sd(higherAQ_online$SL_score)
 
 # normality test
-shapiro_test(higherAQ_offline$SL_score)
+shapiro_test(higherAQ_online$SL_score)
 
 # t-test
-t.test(higherAQ_offline$SL_score)
-cohens_d(higherAQ_offline, SL_score ~ 1)
+t.test(higherAQ_online$SL_score)
+cohens_d(higherAQ_online, SL_score ~ 1)
 ```
 
 ### block x group
@@ -682,9 +682,9 @@ get_anova_table(study1_block_SL_anova, correction = c("GG"))
 ### chi-square test
 
 ```{r}
-study1_SL_offline_table = table(study1_SL$Group, study1_SL$is_learn_offline)
-study1_SL_offline_table
-chisq.test(study1_SL_offline_table, correct = FALSE)
+study1_SL_online_table = table(study1_SL$Group, study1_SL$is_learn_online)
+study1_SL_online_table
+chisq.test(study1_SL_online_table, correct = FALSE)
 ```
 
 ## visuomotor performance
@@ -704,7 +704,7 @@ get_anova_table(study1_VP_anova)
 ```
 
 ```{r}
-# whole offline
+# whole online
 mean(study1_VP_long$VP_score)
 sd(study1_VP_long$VP_score)
 
@@ -717,33 +717,33 @@ cohens_d(study1_VP_long, VP_score ~ 1)
 ```
 
 ```{r}
-# lowerAQ group offline
-lowerAQ_offline <- study1_VP_long %>% 
+# lowerAQ group online
+lowerAQ_online <- study1_VP_long %>% 
   filter(Group == 0)
-mean(lowerAQ_offline$VP_score)
-sd(lowerAQ_offline$VP_score)
+mean(lowerAQ_online$VP_score)
+sd(lowerAQ_online$VP_score)
 
 # normality test
-shapiro_test(lowerAQ_offline$VP_score)
+shapiro_test(lowerAQ_online$VP_score)
 
 # t-test
-t.test(lowerAQ_offline$VP_score)
-cohens_d(lowerAQ_offline, VP_score ~ 1)
+t.test(lowerAQ_online$VP_score)
+cohens_d(lowerAQ_online, VP_score ~ 1)
 ```
 
 ```{r}
-# higherAQ group offline
-higherAQ_offline <- study1_VP_long %>% 
+# higherAQ group online
+higherAQ_online <- study1_VP_long %>% 
   filter(Group == 1)
-mean(higherAQ_offline$VP_score)
-sd(higherAQ_offline$VP_score)
+mean(higherAQ_online$VP_score)
+sd(higherAQ_online$VP_score)
 
 # normality test
-shapiro_test(higherAQ_offline$VP_score)
+shapiro_test(higherAQ_online$VP_score)
 
 # t-test
-t.test(higherAQ_offline$VP_score)
-cohens_d(higherAQ_offline, VP_score ~ 1)
+t.test(higherAQ_online$VP_score)
+cohens_d(higherAQ_online, VP_score ~ 1)
 ```
 
 ### block x group
@@ -758,7 +758,7 @@ get_anova_table(study1_block_VP_anova, correction = c("GG"))
 ### chi-square test
 
 ```{r}
-study1_VP_offline_table = table(study1_VP$Group, study1_VP$is_learn_offline)
-study1_VP_offline_table
-chisq.test(study1_VP_offline_table, correct = FALSE)
+study1_VP_online_table = table(study1_VP$Group, study1_VP$is_learn_online)
+study1_VP_online_table
+chisq.test(study1_VP_online_table, correct = FALSE)
 ```
