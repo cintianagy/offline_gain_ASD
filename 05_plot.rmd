@@ -48,60 +48,112 @@ study1_general$Group[study1_general$Group == 1] <- "higher AQ"
 
 
 ```{r}
-study1_SL_long <- study1_SL %>% 
+study1_SL_long_offline <- study1_SL %>% 
   select(c('Group', 'AQ_total', 'Subject', 'offline_SL'))
 
 learning_phase <- c('offline_SL')
 
-study1_SL_long <- pivot_longer(
-  data = study1_SL_long,
+study1_SL_long_offline <- pivot_longer(
+  data = study1_SL_long_offline,
   cols = learning_phase,
   names_to = c("Learning_phase"),
   values_to = "SL_score"
 )
 
-study1_SL_long$Learning_phase[study1_SL_long$Learning_phase == "offline_SL"] <- "1"
-study1_SL_long$Group[study1_SL_long$Group == 0] <- "lower AQ"
-study1_SL_long$Group[study1_SL_long$Group == 1] <- "higher AQ"
+study1_SL_long_offline$Learning_phase[study1_SL_long_offline$Learning_phase == "offline_SL"] <- "1"
+study1_SL_long_offline$Group[study1_SL_long_offline$Group == 0] <- "lower AQ"
+study1_SL_long_offline$Group[study1_SL_long_offline$Group == 1] <- "higher AQ"
+```
+
+```{r}
+study1_SL_long_online <- study1_SL %>% 
+  select(c('Group', 'AQ_total', 'Subject', 'online_SL'))
+
+learning_phase <- c('online_SL')
+
+study1_SL_long_online <- pivot_longer(
+  data = study1_SL_long_online,
+  cols = learning_phase,
+  names_to = c("Learning_phase"),
+  values_to = "SL_score"
+)
+
+study1_SL_long_online$Learning_phase[study1_SL_long_online$Learning_phase == "online_SL"] <- "1"
+study1_SL_long_online$Group[study1_SL_long_online$Group == 0] <- "lower AQ"
+study1_SL_long_online$Group[study1_SL_long_online$Group == 1] <- "higher AQ"
 ```
 
 ```{r}
 # make long dataset
-study1_VP_long <- study1_VP %>% 
+study1_VP_long_offline <- study1_VP %>% 
   select(c('Group', 'AQ_total', 'Subject', 'offline_VP'))
 
 learning_phase <- c('offline_VP')
 
-study1_VP_long <- pivot_longer(
-  data = study1_VP_long,
+study1_VP_long_offline <- pivot_longer(
+  data = study1_VP_long_offline,
   cols = learning_phase,
   names_to = c("Learning_phase"),
   values_to = "VP_score"
 )
-study1_VP_long$Learning_phase[study1_VP_long$Learning_phase == "offline_VP"] <- "1"
-study1_VP_long$Group[study1_VP_long$Group == 0] <- "lower AQ"
-study1_VP_long$Group[study1_VP_long$Group == 1] <- "higher AQ"
-```
-
-```{r}
-# merge datasets
-study1_SL_VP <- merge(study1_SL_long, study1_VP_long, by = c("Group", "AQ_total", "Subject", "Learning_phase"))
-
-learning_type <- c("SL_score", "VP_score")
-
-study1_SL_VP_long <- pivot_longer(
-  data = study1_SL_VP,
-  cols = learning_type,
-  names_to = c("Learning_type"),
-  values_to = "Learning_score")
-
-study1_SL_VP_long$Learning_type[study1_SL_VP_long$Learning_type == "SL_score"] <- 1
-study1_SL_VP_long$Learning_type[study1_SL_VP_long$Learning_type == "VP_score"] <- 2
+study1_VP_long_offline$Learning_phase[study1_VP_long_offline$Learning_phase == "offline_VP"] <- "1"
+study1_VP_long_offline$Group[study1_VP_long_offline$Group == 0] <- "lower AQ"
+study1_VP_long_offline$Group[study1_VP_long_offline$Group == 1] <- "higher AQ"
 ```
 
 ```{r}
 # make long dataset
-study1_SL_long_block <- study1_SL %>% 
+study1_VP_long_online <- study1_VP %>% 
+  select(c('Group', 'AQ_total', 'Subject', 'online_VP'))
+
+learning_phase <- c('online_VP')
+
+study1_VP_long_online <- pivot_longer(
+  data = study1_VP_long_online,
+  cols = learning_phase,
+  names_to = c("Learning_phase"),
+  values_to = "VP_score"
+)
+study1_VP_long_online$Learning_phase[study1_VP_long_online$Learning_phase == "online_VP"] <- "1"
+study1_VP_long_online$Group[study1_VP_long_online$Group == 0] <- "lower AQ"
+study1_VP_long_online$Group[study1_VP_long_online$Group == 1] <- "higher AQ"
+```
+
+```{r}
+# merge datasets
+study1_SL_VP_long_offline <- merge(study1_SL_long_offline, study1_VP_long_offline, by = c("Group", "AQ_total", "Subject", "Learning_phase"))
+
+learning_type <- c("SL_score", "VP_score")
+
+study1_SL_VP_long_offline <- pivot_longer(
+  data = study1_SL_VP_long_offline,
+  cols = learning_type,
+  names_to = c("Learning_type"),
+  values_to = "Learning_score")
+
+study1_SL_VP_long_offline$Learning_type[study1_SL_VP_long_offline$Learning_type == "SL_score"] <- 1
+study1_SL_VP_long_offline$Learning_type[study1_SL_VP_long_offline$Learning_type == "VP_score"] <- 2
+```
+
+```{r}
+# merge datasets
+study1_SL_VP_long_online <- merge(study1_SL_long_online, study1_VP_long_online, by = c("Group", "AQ_total", "Subject", "Learning_phase"))
+
+learning_type <- c("SL_score", "VP_score")
+
+study1_SL_VP_long_online <- pivot_longer(
+  data = study1_SL_VP_long_online,
+  cols = learning_type,
+  names_to = c("Learning_type"),
+  values_to = "Learning_score")
+
+study1_SL_VP_long_online$Learning_type[study1_SL_VP_long_online$Learning_type == "SL_score"] <- 1
+study1_SL_VP_long_online$Learning_type[study1_SL_VP_long_online$Learning_type == "VP_score"] <- 2
+```
+
+```{r}
+# make long dataset
+study1_SL_long_offline_block <- study1_SL %>% 
   select(c('Group', 'AQ_total', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
                                        'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline', 'block21_offline', 'block22_offline','block23_offline', 'block24_offline','block25_offline'))
 
@@ -109,21 +161,21 @@ blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','b
                'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
                'block19','block20', 'block21', 'block22','block23', 'block24','block25')
 
-study1_SL_long_block <- pivot_longer(
-  data = study1_SL_long_block,
+study1_SL_long_offline_block <- pivot_longer(
+  data = study1_SL_long_offline_block,
   cols = starts_with(blocks),
   names_to = c("Block"),
   values_to = "SL_score"
 )
 
-study1_SL_long_block <- study1_SL_long_block %>% 
+study1_SL_long_offline_block <- study1_SL_long_offline_block %>% 
   mutate(Block = gsub('_offline', "", Block)) %>% 
   mutate(Block = gsub('block', "", Block))
 
-study1_SL_long_block$Group[study1_SL_long_block$Group == 0] <- "lower AQ"
-study1_SL_long_block$Group[study1_SL_long_block$Group == 1] <- "higher AQ"
+study1_SL_long_offline_block$Group[study1_SL_long_offline_block$Group == 0] <- "lower AQ"
+study1_SL_long_offline_block$Group[study1_SL_long_offline_block$Group == 1] <- "higher AQ"
 
-study1_SL_long_block <- study1_SL_long_block %>%
+study1_SL_long_offline_block <- study1_SL_long_offline_block %>%
   group_by(Block, Group) %>% 
   summarise(rt = mean(SL_score, na.rm = T), se = std.error(SL_score, na.rm = T)) %>% 
   ungroup()
@@ -131,7 +183,37 @@ study1_SL_long_block <- study1_SL_long_block %>%
 
 ```{r}
 # make long dataset
-study1_VP_long_block <- study1_VP %>% 
+study1_SL_long_online_block <- study1_SL %>% 
+  select(c('Group', 'AQ_total', 'Subject', 'block2_online','block3_online', 'block4_online','block5_online', 'block6_online','block7_online', 'block8_online','block9_online', 'block10_online',
+                                       'block11_online', 'block12_online','block13_online', 'block14_online','block15_online', 'block16_online', 'block17_online','block18_online', 'block19_online','block20_online', 'block21_online', 'block22_online','block23_online', 'block24_online','block25_online'))
+
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20', 'block21', 'block22','block23', 'block24','block25')
+
+study1_SL_long_online_block <- pivot_longer(
+  data = study1_SL_long_online_block,
+  cols = starts_with(blocks),
+  names_to = c("Block"),
+  values_to = "SL_score"
+)
+
+study1_SL_long_online_block <- study1_SL_long_online_block %>% 
+  mutate(Block = gsub('_online', "", Block)) %>% 
+  mutate(Block = gsub('block', "", Block))
+
+study1_SL_long_online_block$Group[study1_SL_long_online_block$Group == 0] <- "lower AQ"
+study1_SL_long_online_block$Group[study1_SL_long_online_block$Group == 1] <- "higher AQ"
+
+study1_SL_long_online_block <- study1_SL_long_online_block %>%
+  group_by(Block, Group) %>% 
+  summarise(rt = mean(SL_score, na.rm = T), se = std.error(SL_score, na.rm = T)) %>% 
+  ungroup()
+```
+
+```{r}
+# make long dataset
+study1_VP_long_offline_block <- study1_VP %>% 
   select(c('Group', 'AQ_total', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
                                        'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline', 'block21_offline', 'block22_offline','block23_offline', 'block24_offline','block25_offline'))
 
@@ -139,21 +221,51 @@ blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','b
                'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
                'block19','block20', 'block21', 'block22','block23', 'block24','block25')
 
-study1_VP_long_block <- pivot_longer(
-  data = study1_VP_long_block,
+study1_VP_long_offline_block <- pivot_longer(
+  data = study1_VP_long_offline_block,
   cols = starts_with(blocks),
   names_to = c("Block"),
   values_to = "VP_score"
 )
 
-study1_VP_long_block <- study1_VP_long_block %>% 
+study1_VP_long_offline_block <- study1_VP_long_offline_block %>% 
   mutate(Block = gsub('_offline', "", Block)) %>% 
   mutate(Block = gsub('block', "", Block))
 
-study1_VP_long_block$Group[study1_VP_long_block$Group == 0] <- "lower AQ"
-study1_VP_long_block$Group[study1_VP_long_block$Group == 1] <- "higher AQ"
+study1_VP_long_offline_block$Group[study1_VP_long_offline_block$Group == 0] <- "lower AQ"
+study1_VP_long_offline_block$Group[study1_VP_long_offline_block$Group == 1] <- "higher AQ"
 
-study1_VP_long_block <- study1_VP_long_block %>%
+study1_VP_long_offline_block <- study1_VP_long_offline_block %>%
+  group_by(Block, Group) %>% 
+  summarise(rt = mean(VP_score, na.rm = T), se = std.error(VP_score, na.rm = T)) %>% 
+  ungroup()
+```
+
+```{r}
+# make long dataset
+study1_VP_long_online_block <- study1_VP %>% 
+  select(c('Group', 'AQ_total', 'Subject', 'block2_online','block3_online', 'block4_online','block5_online', 'block6_online','block7_online', 'block8_online','block9_online', 'block10_online',
+                                       'block11_online', 'block12_online','block13_online', 'block14_online','block15_online', 'block16_online', 'block17_online','block18_online', 'block19_online','block20_online', 'block21_online', 'block22_online','block23_online', 'block24_online','block25_online'))
+
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20', 'block21', 'block22','block23', 'block24','block25')
+
+study1_VP_long_online_block <- pivot_longer(
+  data = study1_VP_long_online_block,
+  cols = starts_with(blocks),
+  names_to = c("Block"),
+  values_to = "VP_score"
+)
+
+study1_VP_long_online_block <- study1_VP_long_online_block %>% 
+  mutate(Block = gsub('_online', "", Block)) %>% 
+  mutate(Block = gsub('block', "", Block))
+
+study1_VP_long_online_block$Group[study1_VP_long_online_block$Group == 0] <- "lower AQ"
+study1_VP_long_online_block$Group[study1_VP_long_online_block$Group == 1] <- "higher AQ"
+
+study1_VP_long_online_block <- study1_VP_long_online_block %>%
   group_by(Block, Group) %>% 
   summarise(rt = mean(VP_score, na.rm = T), se = std.error(VP_score, na.rm = T)) %>% 
   ungroup()
@@ -218,62 +330,118 @@ study1_visuomotor_perf_long <- study1_visuomotor_perf_long %>%
 
 ```{r}
 # make long dataset
-study2_SL_long <- study2_SL %>% 
+study2_SL_long_offline <- study2_SL %>% 
   select(c('Group', 'Subject', 'offline_SL'))
 
 learning_phase <- c('offline_SL')
 
-study2_SL_long <- pivot_longer(
-  data = study2_SL_long,
+study2_SL_long_offline <- pivot_longer(
+  data = study2_SL_long_offline,
   cols = learning_phase,
   names_to = c("Learning_phase"),
   values_to = "SL_score"
 )
 
-study2_SL_long$Learning_phase[study2_SL_long$Learning_phase == "offline_SL"] <- "1"
-study2_SL_long$Group[study2_SL_long$Group == 0] <- "NTP"
-study2_SL_long$Group[study2_SL_long$Group == 1] <- "ASD"
+study2_SL_long_offline$Learning_phase[study2_SL_long_offline$Learning_phase == "offline_SL"] <- "1"
+study2_SL_long_offline$Group[study2_SL_long_offline$Group == 0] <- "NTP"
+study2_SL_long_offline$Group[study2_SL_long_offline$Group == 1] <- "ASD"
 ```
 
 ```{r}
 # make long dataset
-study2_VP_long <- study2_VP %>% 
+study2_SL_long_online <- study2_SL %>% 
+  select(c('Group', 'Subject', 'online_SL'))
+
+learning_phase <- c('online_SL')
+
+study2_SL_long_online <- pivot_longer(
+  data = study2_SL_long_online,
+  cols = learning_phase,
+  names_to = c("Learning_phase"),
+  values_to = "SL_score"
+)
+
+study2_SL_long_online$Learning_phase[study2_SL_long_online$Learning_phase == "online_SL"] <- "1"
+study2_SL_long_online$Group[study2_SL_long_online$Group == 0] <- "NTP"
+study2_SL_long_online$Group[study2_SL_long_online$Group == 1] <- "ASD"
+```
+
+```{r}
+# make long dataset
+study2_VP_long_offline <- study2_VP %>% 
   select(c('Group', 'Subject', 'offline_VP'))
 
 learning_phase <- c('offline_VP')
 
-study2_VP_long <- pivot_longer(
-  data = study2_VP_long,
+study2_VP_long_offline <- pivot_longer(
+  data = study2_VP_long_offline,
   cols = learning_phase,
   names_to = c("Learning_phase"),
   values_to = "VP_score"
 )
 
-study2_VP_long$Learning_phase[study2_VP_long$Learning_phase == "offline_VP"] <- "1"
-study2_VP_long$Group[study2_VP_long$Group == 0] <- "NTP"
-study2_VP_long$Group[study2_VP_long$Group == 1] <- "ASD"
+study2_VP_long_offline$Learning_phase[study2_VP_long_offline$Learning_phase == "online_VP"] <- "1"
+study2_VP_long_offline$Group[study2_VP_long_offline$Group == 0] <- "NTP"
+study2_VP_long_offline$Group[study2_VP_long_offline$Group == 1] <- "ASD"
+```
+
+```{r}
+# make long dataset
+study2_VP_long_online <- study2_VP %>% 
+  select(c('Group', 'Subject', 'online_VP'))
+
+learning_phase <- c('online_VP')
+
+study2_VP_long_online <- pivot_longer(
+  data = study2_VP_long_online,
+  cols = learning_phase,
+  names_to = c("Learning_phase"),
+  values_to = "VP_score"
+)
+
+study2_VP_long_online$Learning_phase[study2_VP_long_online$Learning_phase == "online_VP"] <- "1"
+study2_VP_long_online$Group[study2_VP_long_online$Group == 0] <- "NTP"
+study2_VP_long_online$Group[study2_VP_long_online$Group == 1] <- "ASD"
 ```
 
 ```{r}
 # merge datasets
-study2_SL_VP <- merge(study2_SL_long, study2_VP_long, by = c("Group", "Subject", "Learning_phase"))
+study2_SL_VP_long_offline <- merge(study2_SL_long_offline, study2_VP_long_offline, by = c("Group", "Subject", "Learning_phase"))
 
 learning_type <- c("SL_score", "VP_score")
 
-study2_SL_VP_long <- pivot_longer(
-  data = study2_SL_VP,
+study2_SL_VP_long_offline <- pivot_longer(
+  data = study2_SL_VP_long_offline,
   cols = learning_type,
   names_to = c("Learning_type"),
   values_to = "Learning_score")
 
 
-study2_SL_VP_long$Learning_type[study2_SL_VP_long$Learning_type == "SL_score"] <- 1
-study2_SL_VP_long$Learning_type[study2_SL_VP_long$Learning_type == "VP_score"] <- 2
+study2_SL_VP_long_offline$Learning_type[study2_SL_VP_long_offline$Learning_type == "SL_score"] <- 1
+study2_SL_VP_long_offline$Learning_type[study2_SL_VP_long_offline$Learning_type == "VP_score"] <- 2
+```
+
+
+```{r}
+# merge datasets
+study2_SL_VP_long_online <- merge(study2_SL_long_online, study2_VP_long_online, by = c("Group", "Subject", "Learning_phase"))
+
+learning_type <- c("SL_score", "VP_score")
+
+study2_SL_VP_long_online <- pivot_longer(
+  data = study2_SL_VP_long_online,
+  cols = learning_type,
+  names_to = c("Learning_type"),
+  values_to = "Learning_score")
+
+
+study2_SL_VP_long_online$Learning_type[study2_SL_VP_long_online$Learning_type == "SL_score"] <- 1
+study2_SL_VP_long_online$Learning_type[study2_SL_VP_long_online$Learning_type == "VP_score"] <- 2
 ```
 
 ```{r}
 # make long dataset
-study2_SL_long_block <- study2_SL %>% 
+study2_SL_long_offline_block <- study2_SL %>% 
   select(c('Group', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
                                        'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline'))
 
@@ -281,21 +449,21 @@ blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','b
                'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
                'block19','block20')
 
-study2_SL_long_block <- pivot_longer(
-  data = study2_SL_long_block,
+study2_SL_long_offline_block <- pivot_longer(
+  data = study2_SL_long_offline_block,
   cols = starts_with(blocks),
   names_to = c("Block"),
   values_to = "SL_score"
 )
 
-study2_SL_long_block <- study2_SL_long_block %>% 
+study2_SL_long_offline_block <- study2_SL_long_offline_block %>% 
     mutate(Block = gsub('_offline', "", Block)) %>% 
     mutate(Block = gsub('block', "", Block))
 
-study2_SL_long_block$Group[study2_SL_long_block$Group == 0] <- "NTP"
-study2_SL_long_block$Group[study2_SL_long_block$Group == 1] <- "ASD"
+study2_SL_long_offline_block$Group[study2_SL_long_offline_block$Group == 0] <- "NTP"
+study2_SL_long_offline_block$Group[study2_SL_long_offline_block$Group == 1] <- "ASD"
 
-study2_SL_long_block <- study2_SL_long_block %>%
+study2_SL_long_offline_block <- study2_SL_long_offline_block %>%
   group_by(Block, Group) %>% 
   summarise(rt = mean(SL_score, na.rm = T), se = std.error(SL_score, na.rm = T)) %>% 
   ungroup()
@@ -303,7 +471,37 @@ study2_SL_long_block <- study2_SL_long_block %>%
 
 ```{r}
 # make long dataset
-study2_VP_long_block <- study2_VP %>% 
+study2_SL_long_online_block <- study2_SL %>% 
+  select(c('Group', 'Subject', 'block2_online','block3_online', 'block4_online','block5_online', 'block6_online','block7_online', 'block8_online','block9_online', 'block10_online',
+                                       'block11_online', 'block12_online','block13_online', 'block14_online','block15_online', 'block16_online', 'block17_online','block18_online', 'block19_online','block20_online'))
+
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20')
+
+study2_SL_long_online_block <- pivot_longer(
+  data = study2_SL_long_online_block,
+  cols = starts_with(blocks),
+  names_to = c("Block"),
+  values_to = "SL_score"
+)
+
+study2_SL_long_online_block <- study2_SL_long_online_block %>% 
+    mutate(Block = gsub('_online', "", Block)) %>% 
+    mutate(Block = gsub('block', "", Block))
+
+study2_SL_long_online_block$Group[study2_SL_long_online_block$Group == 0] <- "NTP"
+study2_SL_long_online_block$Group[study2_SL_long_online_block$Group == 1] <- "ASD"
+
+study2_SL_long_online_block <- study2_SL_long_online_block %>%
+  group_by(Block, Group) %>% 
+  summarise(rt = mean(SL_score, na.rm = T), se = std.error(SL_score, na.rm = T)) %>% 
+  ungroup()
+```
+
+```{r}
+# make long dataset
+study2_VP_long_offline_block <- study2_VP %>% 
   select(c('Group', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
                                        'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline'))
 
@@ -311,78 +509,53 @@ blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','b
                'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
                'block19','block20')
 
-study2_VP_long_block <- pivot_longer(
-  data = study2_VP_long_block,
+study2_VP_long_offline_block <- pivot_longer(
+  data = study2_VP_long_offline_block,
   cols = starts_with(blocks),
   names_to = c("Block"),
   values_to = "VP_score"
 )
 
-study2_VP_long_block <- study2_VP_long_block %>% 
+study2_VP_long_offline_block <- study2_VP_long_offline_block %>% 
   mutate(Block = gsub('_offline', "", Block)) %>% 
   mutate(Block = gsub('block', "", Block))
 
-study2_VP_long_block$Group[study2_VP_long_block$Group == 0] <- "NTP"
-study2_VP_long_block$Group[study2_VP_long_block$Group == 1] <- "ASD"
+study2_VP_long_offline_block$Group[study2_VP_long_offline_block$Group == 0] <- "NTP"
+study2_VP_long_offline_block$Group[study2_VP_long_offline_block$Group == 1] <- "ASD"
 
-study2_VP_long_block <- study2_VP_long_block %>%
+study2_VP_long_offline_block <- study2_VP_long_offline_block %>%
   group_by(Block, Group) %>% 
   summarise(rt = mean(VP_score, na.rm = T), se = std.error(VP_score, na.rm = T)) %>% 
   ungroup()
 ```
 
 ```{r}
-study2_stat_learn_long <- study2_stat_learn %>% 
-  select(c('Group', 'Subject', 'e1_H','e2_H','e3_H','e4_H', 'e1_L','e2_L','e3_L','e4_L'))
+# make long dataset
+study2_VP_long_online_block <- study2_VP %>% 
+  select(c('Group', 'Subject', 'block2_online','block3_online', 'block4_online','block5_online', 'block6_online','block7_online', 'block8_online','block9_online', 'block10_online',
+                                       'block11_online', 'block12_online','block13_online', 'block14_online','block15_online', 'block16_online', 'block17_online','block18_online', 'block19_online','block20_online'))
 
-blocks <- c('e1','e2','e3','e4')
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20')
 
-study2_stat_learn_long <- pivot_longer(
-  data = study2_stat_learn_long,
+study2_VP_long_online_block <- pivot_longer(
+  data = study2_VP_long_online_block,
   cols = starts_with(blocks),
-  names_to = c(".value", "Triplet"),
-  names_pattern = "([^_]+)_(\\D+)",
-  values_to = "Triplet"
+  names_to = c("Block"),
+  values_to = "VP_score"
 )
 
-study2_stat_learn_long <- pivot_longer(
-  data = study2_stat_learn_long,
-  cols = starts_with(blocks),
-  names_to = c("Blocks"),
-  values_to = "stat_learn"
-)
+study2_VP_long_online_block <- study2_VP_long_online_block %>% 
+  mutate(Block = gsub('_online', "", Block)) %>% 
+  mutate(Block = gsub('block', "", Block))
 
-study2_stat_learn_long <- study2_stat_learn_long %>% 
-  mutate(Block = gsub('e', "", Blocks))
+study2_VP_long_online_block$Group[study2_VP_long_online_block$Group == 0] <- "NTP"
+study2_VP_long_online_block$Group[study2_VP_long_online_block$Group == 1] <- "ASD"
 
-study2_stat_learn_long[study2_stat_learn_long == "H"] <- "High"
-study2_stat_learn_long[study2_stat_learn_long == "L"] <- "Low"
-
-study2_stat_learn_long <- study2_stat_learn_long %>%
-  group_by(Block, Triplet, Group) %>% 
-  summarise(rt = mean(stat_learn), se = std.error(stat_learn, na.rm = T)) %>% 
-  ungroup()
-```
-
-```{r}
-study2_visuomotor_perf_long <- study2_visuomotor_perf %>% 
-  select(c('Group', 'Subject', 'e1','e2','e3','e4'))
-
-blocks <- c('e1','e2','e3','e4')
-
-study2_visuomotor_perf_long <- pivot_longer(
-  data = study2_visuomotor_perf_long,
-  cols = starts_with(blocks),
-  names_to = c("Blocks"),
-  values_to = "visuomotor_perf"
-)
-
-study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>% 
-  mutate(Block = gsub('e', "", Blocks))
-
-study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>%
+study2_VP_long_online_block <- study2_VP_long_online_block %>%
   group_by(Block, Group) %>% 
-  summarise(rt = mean(visuomotor_perf), se = std.error(visuomotor_perf, na.rm = T)) %>% 
+  summarise(rt = mean(VP_score, na.rm = T), se = std.error(VP_score, na.rm = T)) %>% 
   ungroup()
 ```
 
@@ -504,7 +677,7 @@ jitter_nudge <- position_jitternudge(width = .05, height = 2,
 ### statistical learning & visuomotor performance
 
 ```{r}
-ggplot(study1_SL_VP_long, aes(x = Learning_type, y = Learning_score), show.legend = FALSE) +
+ggplot(study1_SL_VP_long_offline, aes(x = Learning_type, y = Learning_score), show.legend = FALSE) +
   geom_point(aes(x = as.numeric(Learning_type) - .15, colour = AQ_total), position = position_jitter(width = .05), size = 1.5, shape = 20, show.legend = TRUE) +
   geom_boxplot(aes(fill = AQ_total), outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
   scale_colour_viridis_c() +
@@ -514,14 +687,28 @@ ggplot(study1_SL_VP_long, aes(x = Learning_type, y = Learning_score), show.legen
   theme_classic() +
   labs(colour = "Total AQ score")
 
-#ggsave("raincloud_study1_SL_VP_AQ.png")
+#ggsave("raincloud_study1_SL_VP_AQ_offline.png")
+```
+
+```{r}
+ggplot(study1_SL_VP_long_online, aes(x = Learning_type, y = Learning_score), show.legend = FALSE) +
+  geom_point(aes(x = as.numeric(Learning_type) - .15, colour = AQ_total), position = position_jitter(width = .05), size = 1.5, shape = 20, show.legend = TRUE) +
+  geom_boxplot(aes(fill = AQ_total), outlier.shape = NA, alpha = .5, width = .1, colour = "black", show.legend = FALSE) +
+  scale_colour_viridis_c() +
+  xlab("Measurement type") +
+  ylab("Mean online change score (ms)") +
+  scale_x_discrete(labels = c("Statistical learning", "Visuomotor performance")) +
+  theme_classic() +
+  labs(colour = "Total AQ score")
+
+#ggsave("raincloud_study1_SL_VP_AQ_online.png")
 ```
 
 ## Study 2
 ### statistical learning & visuomotor performance
 
 ```{r}
-ggplot(study2_SL_VP_long, aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))), show.legend = FALSE) +
+ggplot(study2_SL_VP_long_offline, aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))), show.legend = FALSE) +
   geom_flat_violin(aes(fill = factor(Group, levels = c("NTP", "ASD"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .8, colour = NA, show.legend = TRUE) +
   geom_point(aes(x = as.numeric(Learning_type) - .15, colour = factor(Group, levels = c("NTP", "ASD"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
   geom_boxplot(aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))),outlier.shape = NA, alpha = .8, width = .1, colour = "black", show.legend = FALSE) +
@@ -533,7 +720,23 @@ ggplot(study2_SL_VP_long, aes(x = Learning_type, y = Learning_score, fill = fact
   theme_classic() +
   labs(fill = "Group")
 
-#ggsave("raincloud_study2_SL_VP.png")
+#ggsave("raincloud_study2_SL_VP_offline.png")
+```
+
+```{r}
+ggplot(study2_SL_VP_long_online, aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))), show.legend = FALSE) +
+  geom_flat_violin(aes(fill = factor(Group, levels = c("NTP", "ASD"))), position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .8, colour = NA, show.legend = TRUE) +
+  geom_point(aes(x = as.numeric(Learning_type) - .15, colour = factor(Group, levels = c("NTP", "ASD"))), position = position_jitter(width = .05), size = 1, shape = 20, show.legend = FALSE) +
+  geom_boxplot(aes(x = Learning_type, y = Learning_score, fill = factor(Group, levels = c("NTP", "ASD"))),outlier.shape = NA, alpha = .8, width = .1, colour = "black", show.legend = FALSE) +
+  scale_color_manual(values = c("#440154", "#fde725")) +
+  scale_fill_manual(values = c("#440154", "#fde725")) +
+  xlab("Measurement type") +
+  ylab("Mean online change score (ms)") +
+  scale_x_discrete(labels = c("Statistical learning", "Visuomotor performance")) +
+  theme_classic() +
+  labs(fill = "Group")
+
+#ggsave("raincloud_study2_SL_VP_online.png")
 ```
 
 # Learning across blocks
@@ -541,7 +744,7 @@ ggplot(study2_SL_VP_long, aes(x = Learning_type, y = Learning_score, fill = fact
 ### statistical learning
 
 ```{r}
-ggplot(study1_SL_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("lower AQ", "higher AQ")))) +
+ggplot(study1_SL_long_offline_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("lower AQ", "higher AQ")))) +
   geom_point() +
   geom_line() +
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
@@ -549,13 +752,25 @@ ggplot(study1_SL_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(
   labs(x = "Block", y = "Statistical learning score (ms)", colour = "Group") +
   theme_classic()
 
-#ggsave("sm_study1_SL.png")
+#ggsave("sm_study1_SL_offline.png")
+```
+
+```{r}
+ggplot(study1_SL_long_online_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("lower AQ", "higher AQ")))) +
+  geom_point() +
+  geom_line() +
+  geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
+  scale_color_manual(values = c("#440154", "#fde725")) +
+  labs(x = "Block", y = "Statistical learning score (ms)", colour = "Group") +
+  theme_classic()
+
+#ggsave("sm_study1_SL_online.png")
 ```
 
 ### visuomotor performance
 
 ```{r}
-ggplot(study1_VP_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("lower AQ", "higher AQ")))) +
+ggplot(study1_VP_long_offline_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("lower AQ", "higher AQ")))) +
   geom_point() +
   geom_line() +
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
@@ -563,14 +778,26 @@ ggplot(study1_VP_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(
   labs(x = "Block", y = "Visuomotor performance change (ms)", colour = "Group") +
   theme_classic()
 
-#ggsave("sm_study1_VP.png")
+#ggsave("sm_study1_VP_offline.png")
+```
+
+```{r}
+ggplot(study1_VP_long_online_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("lower AQ", "higher AQ")))) +
+  geom_point() +
+  geom_line() +
+  geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
+  scale_color_manual(values = c("#440154", "#fde725")) +
+  labs(x = "Block", y = "Visuomotor performance change (ms)", colour = "Group") +
+  theme_classic()
+
+#ggsave("sm_study1_VP_online.png")
 ```
 
 ## Study 2
 ### statistical learning
 
 ```{r}
-ggplot(study2_SL_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("NTP", "ASD")))) +
+ggplot(study2_SL_long_offline_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("NTP", "ASD")))) +
   geom_point() +
   geom_line() +
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
@@ -578,13 +805,25 @@ ggplot(study2_SL_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(
   labs(x = "Block", y = "Statistical learning score (ms)", colour = "Group") +
   theme_classic()
 
-#ggsave("sm_study2_SL.png")
+#ggsave("sm_study2_SL_offline.png")
+```
+
+```{r}
+ggplot(study2_SL_long_online_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("NTP", "ASD")))) +
+  geom_point() +
+  geom_line() +
+  geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
+  scale_color_manual(values = c("#440154", "#fde725")) +
+  labs(x = "Block", y = "Statistical learning score (ms)", colour = "Group") +
+  theme_classic()
+
+#ggsave("sm_study2_SL_online.png")
 ```
 
 ### visuomotor performance
 
 ```{r}
-ggplot(study2_VP_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("NTP", "ASD")))) +
+ggplot(study2_VP_long_offline_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("NTP", "ASD")))) +
   geom_point() +
   geom_line() +
   geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
@@ -592,7 +831,19 @@ ggplot(study2_VP_long_block, aes(x = as.numeric(Block), y = rt, colour = factor(
   labs(x = "Block", y = "Visuomotor performance change (ms)", colour = "Group") +
   theme_classic()
 
-#ggsave("sm_study2_VP.png")
+#ggsave("sm_study2_VP_offline.png")
+```
+
+```{r}
+ggplot(study2_VP_long_online_block, aes(x = as.numeric(Block), y = rt, colour = factor(Group, levels = c("NTP", "ASD")))) +
+  geom_point() +
+  geom_line() +
+  geom_errorbar(aes(ymin = rt - se, ymax = rt + se), width = 0.05, size = 0.2) +
+  scale_color_manual(values = c("#440154", "#fde725")) +
+  labs(x = "Block", y = "Visuomotor performance change (ms)", colour = "Group") +
+  theme_classic()
+
+#ggsave("sm_study2_VP_online.png")
 ```
 
 # Stat learning
