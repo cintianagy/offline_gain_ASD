@@ -242,7 +242,7 @@ lillie.test(study1_SL_long$SL_score)
 ```{r}
 # building model
 baseline_model_SL <- 
-  blmer(SL_score ~ Block_centered + (1|Subject),
+  lmer(SL_score ~ Block_centered + (1|Subject),
        data = study1_SL_long_block
        )
 
@@ -329,8 +329,7 @@ baseline_model_boot_residual <- bootstrap(baseline_model_SL, .f = fixef, B = 100
 confint(baseline_model_boot_residual, type = "norm")
 ```
 
-
-## General skill learning blockwise
+## Visuomotor performance blockwise
 ### AQ model for VP
 
 ```{r}
@@ -636,8 +635,8 @@ sd(study1_SL_long$SL_score)
 shapiro_test(study1_SL_long$SL_score)
 
 # t-test
-t.test(study1_SL_long$SL_score)
-cohens_d(study1_SL_long, SL_score ~ 1)
+wilcox.test(study1_SL_long$SL_score)
+wilcox_effsize(study1_SL_long, SL_score ~ 1)
 ```
 
 ```{r}
@@ -666,8 +665,8 @@ sd(higherAQ_online$SL_score)
 shapiro_test(higherAQ_online$SL_score)
 
 # t-test
-t.test(higherAQ_online$SL_score)
-cohens_d(higherAQ_online, SL_score ~ 1)
+wilcox.test(higherAQ_online$SL_score)
+wilcox_effsize(higherAQ_online, SL_score ~ 1)
 ```
 
 ### block x group
