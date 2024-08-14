@@ -380,7 +380,7 @@ study2_VP_long_offline <- pivot_longer(
   values_to = "VP_score"
 )
 
-study2_VP_long_offline$Learning_phase[study2_VP_long_offline$Learning_phase == "online_VP"] <- "1"
+study2_VP_long_offline$Learning_phase[study2_VP_long_offline$Learning_phase == "offline_VP"] <- "1"
 study2_VP_long_offline$Group[study2_VP_long_offline$Group == 0] <- "NTP"
 study2_VP_long_offline$Group[study2_VP_long_offline$Group == 1] <- "ASD"
 ```
