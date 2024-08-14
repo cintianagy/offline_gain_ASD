@@ -330,7 +330,7 @@ confint(baseline_model_boot_residual, type = "norm")
 ```
 
 
-## General skill learning blockwise
+## Visuomotor performance learning blockwise
 ### AQ model for VP
 
 ```{r}
