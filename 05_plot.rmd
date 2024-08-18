@@ -559,6 +559,62 @@ study2_VP_long_online_block <- study2_VP_long_online_block %>%
   ungroup()
 ```
 
+```{r}
+study2_stat_learn_long <- study2_stat_learn %>% 
+  select(c('Group', 'Subject', 'e1_H','e2_H','e3_H','e4_H', 'e1_L','e2_L','e3_L','e4_L'))
+
+blocks <- c('e1','e2','e3','e4')
+
+study2_stat_learn_long <- pivot_longer(
+  data = study2_stat_learn_long,
+  cols = starts_with(blocks),
+  names_to = c(".value", "Triplet"),
+  names_pattern = "([^_]+)_(\\D+)",
+  values_to = "Triplet"
+)
+
+study2_stat_learn_long <- pivot_longer(
+  data = study2_stat_learn_long,
+  cols = starts_with(blocks),
+  names_to = c("Blocks"),
+  values_to = "stat_learn"
+)
+
+study2_stat_learn_long <- study2_stat_learn_long %>% 
+  mutate(Block = gsub('e', "", Blocks))
+
+study2_stat_learn_long[study2_stat_learn_long == "H"] <- "High"
+study2_stat_learn_long[study2_stat_learn_long == "L"] <- "Low"
+
+study2_stat_learn_long <- study2_stat_learn_long %>%
+  group_by(Block, Triplet, Group) %>% 
+  summarise(rt = mean(stat_learn), se = std.error(stat_learn, na.rm = T)) %>% 
+  ungroup()
+```
+
+
+```{r}
+study2_visuomotor_perf_long <- study2_visuomotor_perf %>% 
+  select(c('Group', 'Subject', 'e1','e2','e3','e4'))
+
+blocks <- c('e1','e2','e3','e4')
+
+study2_visuomotor_perf_long <- pivot_longer(
+  data = study2_visuomotor_perf_long,
+  cols = starts_with(blocks),
+  names_to = c("Blocks"),
+  values_to = "visuomotor_perf"
+)
+
+study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>% 
+  mutate(Block = gsub('e', "", Blocks))
+
+study2_visuomotor_perf_long <- study2_visuomotor_perf_long %>%
+  group_by(Block, Group) %>% 
+  summarise(rt = mean(visuomotor_perf), se = std.error(visuomotor_perf, na.rm = T)) %>% 
+  ungroup()
+```
+
 # AQ plot
 
 ```{r}

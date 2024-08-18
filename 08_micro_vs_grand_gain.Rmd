@@ -1,0 +1,228 @@
+---
+title: "micro_vs_grand_gain"
+author: "Cintia Anna Nagy"
+date: "2024-08-14"
+output: html_document
+---
+# import packages
+
+```{r message = FALSE}
+library(tidyverse)
+library(rstatix)
+library(readr)
+library(dplyr)
+library(car)
+library(tidyverse)
+library(sjPlot)
+library(lme4)
+library(performance)
+library(nortest)
+library(lmeresampler)
+library(Hmisc)
+```
+
+# import data
+
+```{r message = FALSE}
+study1_stat_learn <- read_csv("processed_data/study_1/data_study_1_statistical_learning.csv")
+study1_visuomotor_perf  <- read_csv("processed_data/study_1/data_study_1_visuomotor_performance.csv")
+study2_stat_learn  <- read_csv("processed_data/study_2/data_study_2_statistical_learning.csv")
+study2_visuomotor_perf  <- read_csv("processed_data/study_2/data_study_2_visuomotor_performance.csv")
+study1_SL <- read_csv("processed_data/study_1/data_study_1_SL_offline_online.csv")
+study1_VP <- read_csv("processed_data/study_1/data_study_1_VP_offline_online.csv")
+study2_SL <- read_csv("processed_data/study_2/data_study_2_SL_offline_online.csv")
+study2_VP <- read_csv("processed_data/study_2/data_study_2_VP_offline_online.csv")
+```
+
+# preprocessing
+## Study 1
+
+```{r}
+study1_micro_vs_grand_SL <- merge(study1_stat_learn, study1_SL, by = c("Group", "AQ_total", "Subject"))
+
+study1_micro_vs_grand_SL <- study1_micro_vs_grand_SL %>% 
+  select(c("Group", "AQ_total", "Subject", "mean_SL", "offline_SL")) %>% 
+  mutate(mean_SL_scaled = scale(mean_SL, center = F, scale = T)) %>% 
+  mutate(offline_SL_scaled = scale(offline_SL, center = F, scale = T))
+```
+
+```{r}
+study1_micro_vs_grand_VP <- merge(study1_visuomotor_perf, study1_VP, by = c("Group", "AQ_total", "Subject"))
+
+study1_micro_vs_grand_VP <- study1_micro_vs_grand_VP %>% 
+  select(c("Group", "AQ_total", "Subject", "mean_VP", "offline_VP"))%>% 
+  mutate(mean_VP_scaled = scale(mean_VP, center = F, scale = T)) %>% 
+  mutate(offline_VP_scaled = scale(offline_VP, center = F, scale = T))
+```
+
+## Study 2
+
+```{r}
+study2_micro_vs_grand_SL <- merge(study2_stat_learn, study2_SL, by = c("Group", "Subject"))
+
+study2_micro_vs_grand_SL <- study2_micro_vs_grand_SL %>% 
+  select(c("Group", "Subject", "mean_SL", "offline_SL")) %>% 
+  mutate(mean_SL_scaled = scale(mean_SL, center = F, scale = T)) %>% 
+  mutate(offline_SL_scaled = scale(offline_SL, center = F, scale = T))
+```
+
+```{r}
+study2_micro_vs_grand_VP <- merge(study2_visuomotor_perf, study2_VP, by = c("Group", "Subject"))
+
+study2_micro_vs_grand_VP <- study2_micro_vs_grand_VP %>% 
+  select(c("Group", "Subject", "mean_VP", "offline_VP")) %>% 
+  mutate(mean_VP_scaled = scale(mean_VP, center = F, scale = T)) %>% 
+  mutate(offline_VP_scaled = scale(offline_VP, center = F, scale = T))
+```
+
+# Correlation of micro and grand gain
+## Study 1
+### statistical learning
+
+```{r}
+# building model
+AQ_model_SL <- 
+  lm(mean_SL_scaled ~ offline_SL_scaled*AQ_total,
+       data = study1_micro_vs_grand_SL
+       )
+
+# model outputs
+summary(AQ_model_SL)
+tab_model(AQ_model_SL, show.std = T)
+
+# assumption checks
+check_autocorrelation(AQ_model_SL)
+check_heteroscedasticity(AQ_model_SL)
+check_outliers(AQ_model_SL)
+check_model(AQ_model_SL, panel = TRUE)
+plot_model(AQ_model_SL, type = "diag")
+
+# visualizing the interactions
+plot_model(AQ_model_SL)
+
+# goodness of fit indicators
+AIC_AQ_model_SL <- AIC(AQ_model_SL)
+BIC_AQ_model_SL <- BIC(AQ_model_SL)
+
+# normality test for residuals
+AQ_model_SL_residuals <- residuals(AQ_model_SL)
+lillie.test(AQ_model_SL_residuals)
+
+# normality test
+lillie.test(study1_micro_vs_grand_SL$mean_SL)
+```
+
+### visuomotor performance
+
+```{r}
+# building model
+AQ_model_VP <- 
+  lm(mean_VP_scaled ~ offline_VP_scaled*AQ_total,
+       data = study1_micro_vs_grand_VP
+       )
+
+# model outputs
+summary(AQ_model_VP)
+tab_model(AQ_model_VP, show.std = T)
+
+# assumption checks
+check_autocorrelation(AQ_model_VP)
+check_heteroscedasticity(AQ_model_VP)
+check_outliers(AQ_model_VP)
+check_model(AQ_model_VP, panel = TRUE)
+plot_model(AQ_model_VP, type = "diag")
+plot_model(AQ_model_VP)
+
+# visualizing the interactions
+plot_model(AQ_model_VP)
+
+# goodness of fit indicators
+AIC_AQ_model_VP <- AIC(AQ_model_VP)
+BIC_AQ_model_VP <- BIC(AQ_model_VP)
+
+# normality test for residuals
+AQ_model_VP_residuals <- residuals(AQ_model_VP)
+lillie.test(AQ_model_VP_residuals)
+
+# normality test
+lillie.test(study1_micro_vs_grand_VP$mean_VP)
+```
+
+## Study 2
+### statistical learning
+
+```{r}
+# building model
+AQ_model_SL <- 
+  lm(mean_SL_scaled ~ offline_SL_scaled*Group,
+       data = study2_micro_vs_grand_SL
+       )
+
+# model outputs
+summary(AQ_model_SL)
+tab_model(AQ_model_SL, show.std = T)
+
+# assumption checks
+check_autocorrelation(AQ_model_SL)
+check_heteroscedasticity(AQ_model_SL)
+check_outliers(AQ_model_SL)
+check_model(AQ_model_SL, panel = TRUE)
+plot_model(AQ_model_SL, type = "diag")
+
+# visualizing the interactions
+plot_model(AQ_model_SL)
+
+# goodness of fit indicators
+AIC_AQ_model_SL <- AIC(AQ_model_SL)
+BIC_AQ_model_SL <- BIC(AQ_model_SL)
+
+# normality test for residuals
+AQ_model_SL_residuals <- residuals(AQ_model_SL)
+lillie.test(AQ_model_SL_residuals)
+
+# normality test
+lillie.test(study1_micro_vs_grand_SL$mean_SL)
+```
+
+### visuomotor performance
+
+```{r}
+# building model
+AQ_model_VP <- 
+  lm(mean_VP_scaled ~ offline_VP_scaled*Group,
+       data = study2_micro_vs_grand_VP
+       )
+
+# model outputs
+summary(AQ_model_VP)
+tab_model(AQ_model_VP, show.std = T)
+
+# assumption checks
+check_autocorrelation(AQ_model_VP)
+check_heteroscedasticity(AQ_model_VP)
+check_outliers(AQ_model_VP)
+check_model(AQ_model_VP, panel = TRUE)
+plot_model(AQ_model_VP, type = "diag")
+
+# visualizing the interactions
+plot_model(AQ_model_VP)
+
+# goodness of fit indicators
+AIC_AQ_model_VP <- AIC(AQ_model_VP)
+BIC_AQ_model_VP <- BIC(AQ_model_VP)
+
+# normality test for residuals
+AQ_model_VP_residuals <- residuals(AQ_model_VP)
+lillie.test(AQ_model_VP_residuals)
+
+# normality test
+lillie.test(study1_micro_vs_grand_VP$mean_VP)
+```
+
+```{r}
+ggplot(study2_micro_vs_grand_VP, aes(x = offline_VP_scaled, y = mean_VP_scaled, color = factor(Group))) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  theme_classic()
+```
+
