@@ -118,6 +118,11 @@ chisq.test(study2_sex_table, correct = FALSE)
 ## cognitive profile
 
 ```{r}
+study2_cog_tasks <- study2_cog_tasks %>% 
+  group_by(Subject) %>% 
+  mutate(letter_count = (letter_1_count + letter_2_count)/2,
+         semantic_count = (semantic_1_count + semantic_2_count)/2)
+  
 study2_cog_NTP <- study2_cog_tasks %>% 
   filter(Group == 0)
 
@@ -187,7 +192,30 @@ sd(study2_cog_ASD$dprime_s2)
 wilcox.test(study2_cog_NTP$dprime_s2, study2_cog_ASD$dprime_s2)
 wilcox_effsize(study2_cog_tasks, dprime_s2 ~ Group)
 ```
+### Fluency
 
+```{r}
+# letter fluency
+shapiro.test(study2_cog_NTP$letter_count)
+shapiro.test(study2_cog_ASD$letter_count)
+mean(study2_cog_NTP$letter_count)
+sd(study2_cog_NTP$letter_count)
+mean(study2_cog_ASD$letter_count)
+sd(study2_cog_ASD$letter_count)
+t.test(letter_count ~ Group, data = study2_cog_tasks, var.equal = TRUE)
+cohens_d(study2_cog_tasks, letter_count ~ Group)
+```
 
+```{r}
+# semantic fluency
+shapiro.test(study2_cog_NTP$semantic_count)
+shapiro.test(study2_cog_ASD$semantic_count)
+mean(study2_cog_NTP$semantic_count)
+sd(study2_cog_NTP$semantic_count)
+mean(study2_cog_ASD$semantic_count)
+sd(study2_cog_ASD$semantic_count)
+wilcox.test(study2_cog_NTP$semantic_count, study2_cog_ASD$semantic_count)
+wilcox_effsize(study2_cog_tasks, semantic_count ~ Group)
+```
 
 
