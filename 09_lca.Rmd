@@ -179,3 +179,158 @@ ggplot(plotdat,aes(Age,Ypred,colour = class,group = Subject)) +
   theme(legend.position = "none",strip.background = element_blank()) +
   scale_color_manual(values = c("#4D95B9","#DCC75D","#C35164"))
 ```
+
+# Visuomotor performance
+## preprocessing
+
+```{r}
+study1_VP$ID <- seq.int(nrow(study1_VP))
+
+study1_VP_numeric <- study1_VP %>% 
+  select(c('AQ_total', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
+                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline', 'block21_offline', 'block22_offline','block23_offline', 'block24_offline','block25_offline'))
+
+# test normality
+sapply(study1_VP_numeric, shapiro.test)
+
+# make long data
+study1_VP_long <- study1_VP %>% 
+  select(c( 'ID', 'Group', 'AQ_total', 'Subject', 'block2_offline','block3_offline', 'block4_offline','block5_offline', 'block6_offline','block7_offline', 'block8_offline','block9_offline', 'block10_offline',
+                                       'block11_offline', 'block12_offline','block13_offline', 'block14_offline','block15_offline', 'block16_offline', 'block17_offline','block18_offline', 'block19_offline','block20_offline', 'block21_offline', 'block22_offline','block23_offline', 'block24_offline','block25_offline'))
+
+blocks <- c('block2','block3', 'block4','block5', 'block6','block7', 'block8','block9', 'block10',
+               'block11', 'block12','block13', 'block14','block15', 'block16', 'block17','block18',
+               'block19','block20', 'block21', 'block22','block23', 'block24','block25')
+
+study1_VP_long <- pivot_longer(
+  data = study1_VP_long,
+  cols = starts_with(blocks),
+  names_to = c("Block"),
+  values_to = "VP_score"
+)
+
+study1_VP_long <- study1_VP_long %>% 
+  mutate(Block = gsub('_offline', "", Block)) %>% 
+  mutate(Block = gsub('block', "", Block))
+
+study1_VP_long <- study1_VP_long %>% 
+  mutate(Block = as.numeric(Block)) %>% 
+  mutate(Epoch = case_when(
+        between(Block, 2, 5)   ~ 1,
+        between(Block, 6, 10)  ~ 2,
+        between(Block, 11, 15) ~ 3,
+        between(Block, 16, 20) ~ 4,
+        between(Block, 21, 25) ~ 5
+        ))
+
+study1_VP_wide <- study1_VP_long %>% 
+  group_by(ID, Subject, Group, AQ_total, Epoch) %>% 
+  summarise(VP_score_epoch = median(VP_score, VP_score, na.rm = T)) %>% 
+  ungroup()
+```
+
+## fit LCA models
+
+```{r}
+m1.lin <- hlme(VP_score_epoch ~ Epoch, random = ~Epoch, subject = 'ID', data = study1_VP_wide)
+```
+
+```{r}
+m2.lin <- gridsearch(hlme(VP_score_epoch ~ Epoch, random = ~Epoch, subject = 'ID', data = study1_VP_wide, ng = 2, mixture = ~Epoch), rep = 200, maxiter = 50, minit = m1.lin)
+```
+
+```{r}
+m3.lin <- gridsearch(hlme(VP_score_epoch ~ Epoch, random = ~Epoch, subject = 'ID', data = study1_VP_wide, ng = 3, mixture = ~Epoch), rep = 200, maxiter = 50, minit = m1.lin)
+```
+
+## compare fit
+
+```{r}
+summarytable(m1.lin, m2.lin, m3.lin, which = c("G", "loglik", "conv", "npm", "AIC", "BIC", "SABIC", "entropy", "ICL", "%class"))
+```
+
+## summarize model
+
+```{r}
+summarytable(m1.lin)
+
+#post.prob <- postprob(m1.lin)
+```
+
+## class membership probabilities
+
+```{r}
+class.mem <- m1.lin$pprob
+logit.class <- car::logit(p = class.mem[ , 3], percents = max(class.mem[ , 3], na.rm = TRUE) > 1)
+class.mem.logit.weighted <- cbind(class.mem[ , 1], logit.class)
+```
+
+## visualize predicted trajectoires
+
+```{r}
+data_pred <- data.frame(Age=c(0,1,4,7))
+pred1 <- predictY(m1.lin, data_pred, var.time = "Age", draws =  TRUE)
+plot(pred1, lty = 1,  ylab="Learning score (ms)", main="Predicted trajectories for ASRT", xlab = "Age (years)", legend = NULL, shades = TRUE)
+legend(x = "topright",legend = c("class1 decrease, N=71",
+                             "class2 high start steep decrease, N=3",
+                             "class3 increase, N=23"),
+       col = c(1,2,3), lwd = c(2), lty = c(1,1), bty = "n", cex = 0.8)
+
+pred2 <- data.frame(pred1[["pred"]])
+```
+
+## inspection of residuals
+
+```{r}
+plot(m1.lin, cex.main=0.8)
+```
+
+## inspection of prosterior probabilities dicstributions
+
+```{r}
+plot(m1.lin, which="postprob")
+```
+
+## merge with original data
+
+```{r}
+regdat <- masterdata[masterdata$Subject %in% class.mem.logit.weighted$Subject,]
+regdat <- cbind(regdat,class.mem.logit.weighted[,2:5])
+regdat$class <- factor(regdat$class,levels = c(1,2,3),labels = c("decrease","high start steep decrease","increase"))
+regdat$high.post.prob<-pmax(regdat$prob1,
+                            regdat$prob2,
+                            regdat$prob3)
+
+regdat$class2 <- relevel(regdat$class, ref = "decrease")
+```
+
+## plot trajectoires in each class
+
+```{r}
+regdat$Ypred1 <- ifelse(regdat$class == "decrease",pred2[1,1],
+                        ifelse(regdat$class == "increase",pred2[1,3],
+                               pred2[1,2]))
+regdat$Ypred2 <- ifelse(regdat$class == "decrease",pred2[2,1],
+                        ifelse(regdat$class == "increase",pred2[2,3],
+                               pred2[2,2]))
+regdat$Ypred3 <- ifelse(regdat$class == "decrease",pred2[3,1],
+                        ifelse(regdat$class == "increase",pred2[3,3],
+                               pred2[3,2]))
+regdat$Ypred4 <- ifelse(regdat$class == "decrease",pred2[4,1],
+                        ifelse(regdat$class == "increase",pred2[4,3],
+                               pred2[4,2]))
+
+plotdat <- gather(regdat,Age,LS,140:143)
+plotdat2 <- gather(regdat,Age,Ypred,477:480)
+plotdat$Ypred <- plotdat2$Ypred
+plotdat$Age <- rep(c(7,8,11,14),each = n)
+
+ggplot(plotdat,aes(Age,Ypred,colour = class,group = Subject)) + 
+  geom_line(size = 1.4) +
+  geom_point(size = 3.4) +
+  geom_line(aes(Age,LS),size = 1.4,alpha = 0.1) +
+  geom_point(aes(Age,LS),size = 3.4,alpha = 0.1) +
+  theme_classic(base_size = 24) + ylab("Learning score (ms)") + facet_grid(. ~ class) +
+  theme(legend.position = "none",strip.background = element_blank()) +
+  scale_color_manual(values = c("#4D95B9","#DCC75D","#C35164"))
+```
